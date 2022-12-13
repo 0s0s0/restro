@@ -74,9 +74,10 @@ export const Field = styled(TextField, {
   // },
   color: "black",
   "& .MuiOutlinedInput-root": {
+    // border: `1px solid ${theme.palette.primary.main}`,
+    border: `1px solid ${STYLE.primaryColor}`,
     // border: forgotError ? "2px solid red" : "2px solid gray",
     // border: "1px solid 	#e6e6fa",
-    border: `1px solid ${theme.palette.primary.light}`,
 
     borderRadius: "25px",
     paddingRight: "0px",

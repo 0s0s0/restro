@@ -5,8 +5,7 @@ export const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      // main: "#0f0",
-      main: "#66B2FF",
+      main: "#FFAA33",
     },
     divider: "#E7EBF0",
     common: {

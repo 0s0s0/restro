@@ -1,5 +1,12 @@
-import { Box, Button, Divider, Grid, Typography } from "@mui/material";
-import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import React, { useState, useEffect } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import "./style.css";
 import RecommendSlider from "../../components/Recommended/RecommendSlider";
@@ -8,12 +15,269 @@ import { makeStyles } from "@mui/styles";
 import Rating from "@mui/material/Rating";
 import ReactReadMoreReadLess from "react-read-more-read-less";
 import { useLocation } from "react-router-dom";
+import {
+  AddOutlined,
+  DeleteForeverOutlined,
+  RemoveOutlined,
+} from "@mui/icons-material";
+import { connect, useSelector } from "react-redux";
+import * as cartActions from "../../redux/actions/cartActions";
+import { useDispatch } from "react-redux";
 
-function SingleProduct() {
+function SingleProduct({
+  createCart,
+  addToCart,
+  getCartItems,
+  increaseCartItem,
+  reduceCartItem,
+}) {
   const { state } = useLocation();
   const data = state.data;
+  const added = state.added;
+  const cart_id = state.cart_id;
   const classes = useStyles();
-  const [value, setValue] = useState(2);
+  const [value, setValue] = useState({ quantity: 0, cart_id: 0 });
+  const [incart, setIncart] = useState();
+  const dispatch = useDispatch();
+  const [updateTotal, setUpdateTotal] = useState(false);
+  const cartValues = useSelector(
+    (state) => state.cartReducer.getCartitems.cart_items
+  );
+
+  const CreateCart = async () => {
+    let userID = await JSON.parse(localStorage.getItem("userId"));
+    let data = {
+      id: userID,
+    };
+    createCart(
+      data,
+      (res) => createCartsuccessCallBack(res),
+      (err) => createCartfailureCallback(err)
+    );
+  };
+
+  const createCartsuccessCallBack = (res) => {
+    console.log("create cart Successcall Back --->", res);
+    try {
+      if (res.success == true) {
+        let inputData = {
+          cart_id: res.data.id,
+          item_id: data.item.id,
+        };
+        console.log("input data for add to cart", inputData);
+        // res.map((item) => {
+        //   setValue(item.quantity);
+        // });
+
+        addToCart(
+          inputData,
+          (res) => addToCartsuccessCallBack(res),
+          (err) => addToCartfailureCallback(err)
+        );
+
+        // WToast.show({ data: 'Added to Cart' });
+        // props.navigation.navigate('EditProfile')
+      } else {
+        // let message = res.message;
+        // WToast.show({ data: 'Something went wrong' });
+      }
+    } catch (err) {
+      //   Sentry.captureException(err);
+      console.log("Error", err);
+    }
+  };
+
+  const createCartfailureCallback = (err) => {
+    console.log("create cart Failure Back --->", err);
+  };
+  const addToCartsuccessCallBack = (res) => {
+    console.log("add to cart Successcall Back --->", res);
+    try {
+      if (res.success == true) {
+        setValue({ quantity: res.data.quantity, cart_id: res.data.id });
+        GetCartItems();
+
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            severity: "success",
+            message: "Added to Cart successfuly",
+          },
+        });
+        // WToast.show({ data: 'Added to Cart' });
+        // props.navigation.navigate('EditProfile')
+      } else {
+        // let message = res.message;
+        // WToast.show({ data: 'Something went wrong' });
+      }
+    } catch (err) {
+      //   Sentry.captureException(err);
+      console.log("Error", err);
+    }
+  };
+
+  const addToCartfailureCallback = (err) => {
+    console.log("add to cart Failure Back --->", err);
+  };
+  const GetCartItems = async (local) => {
+    let user_id = await JSON.parse(localStorage.getItem("userId"));
+    console.log("user_id ", user_id);
+    let data = {
+      id: user_id,
+    };
+
+    getCartItems(
+      data,
+      (res) => getCartItemsSuccessCallback(res),
+      (err) => getCartItemsFailureCallBack(err)
+    );
+  };
+
+  const getCartItemsSuccessCallback = (res) => {
+    console.log("Get cart items Successcall Back @@@@@@@@@@@ ----->", res);
+
+    try {
+      if (res.success == true) {
+        console.log(
+          "&&&&&&&&&&&&&&&& Cat items @@@@@@@@@@@ ----->",
+          res?.cart_items
+        );
+        // res.cart_items.map((item) => {
+
+        //   setValue({
+        //     quantity: item.cart_quantity,
+        //     cart_id: item.cart_item_id,
+        //   });
+        // });
+        // res.cart_items_id &&
+      } else {
+        // let message = res.message;
+        // WToast.show({ data: 'Something went wrong' });
+      }
+    } catch (err) {
+      //   Sentry.captureException(err);
+      console.log("Error", err);
+    }
+  };
+
+  const getCartItemsFailureCallBack = (error) => {
+    console.log("get cart items failurecalll back--------------->", error);
+  };
+  const reduceCarQuantity = (id) => {
+    let data = {
+      id: id,
+    };
+    reduceCartItem(
+      data,
+      (res) => reduceCartItemSuccessCallback(res),
+      (err) => reduceCartItemFailureCallBack(err)
+    );
+  };
+
+  const reduceCartItemSuccessCallback = (res) => {
+    console.log("Reduce cart item Successcall Back @@@@@@@@@@@ ----->", res);
+    try {
+      if (res.success == true) {
+        GetCartItems();
+        cartValues.map((item) => {
+          item.cart_item_id &&
+            setValue({ quantity: res.data.quantity, cart_id: value.cart_id });
+        });
+        setUpdateTotal(!updateTotal);
+        // WToast.show({ data: res.message });
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            severity: "success",
+            message: res.message,
+          },
+        });
+      } else {
+        // let message = res.message;
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            severity: "error",
+            message: "Some thing went wrong",
+          },
+        });
+      }
+    } catch (err) {
+      //   Sentry.captureException(err);
+      console.log("Error", err);
+    }
+  };
+
+  const reduceCartItemFailureCallBack = (error) => {
+    console.log("reduce cart item failurecalll back--------------->", error);
+  };
+
+  const increaseCarQuantity = (id) => {
+    // alert(id);
+    let data = {
+      id: id,
+    };
+    increaseCartItem(
+      data,
+      (res) => increaseCartItemSuccessCallback(res),
+      (err) => increaseCartItemFailureCallBack(err)
+    );
+  };
+  const increaseCartItemSuccessCallback = (res) => {
+    console.log("increase cart item Successcall Back @@@@@@@@@@@ ----->", res);
+    try {
+      if (res.success == true) {
+        setUpdateTotal(!updateTotal);
+        GetCartItems();
+        cartValues.map((item) => {
+          item.cart_item_id &&
+            setValue({ quantity: res.data.quantity, cart_id: value.cart_id });
+        });
+
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            severity: "success",
+            message: res.message,
+          },
+        });
+        // setValue(value + 1);
+      } else {
+        // let message = res.message;
+
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            severity: "error",
+            message: "Some thing went wrong",
+          },
+        });
+      }
+    } catch (err) {
+      //   Sentry.captureException(err);
+      console.log("Error", err);
+    }
+  };
+
+  const increaseCartItemFailureCallBack = (error) => {
+    console.log("increase cart item failurecalll back--------------->", error);
+  };
+  useEffect(() => {
+    GetCartItems();
+    cartValues &&
+      cartValues.map((item) => {
+        if (item.cart_item_id === cart_id) {
+          // console.log("counts--------------------------->", item?.cart_item_id);
+          // console.log(added);
+          return setValue({
+            quantity: item.cart_quantity,
+            cart_id: item.cart_item_id,
+          });
+        } else if (value.quantity > 0) {
+          return value;
+        }
+      });
+  }, [setValue, cartValues.length]);
 
   return (
     <Grid
@@ -42,7 +306,7 @@ function SingleProduct() {
               <Box sx={{ mt: 2 }}>
                 <Rating
                   name="simple-controlled"
-                  value={value}
+                  // value={value}
                   onChange={(event, newValue) => {
                     setValue(newValue);
                   }}
@@ -67,22 +331,63 @@ function SingleProduct() {
               </Box>
 
               <Box style={{ display: "flex", marginTop: "1rem" }}>
-                <Button
-                  className={classes.itemCardbtn}
-                  variant="outlined"
-                  onClick={() => {}}
-                >
-                  Add to cart
-                </Button>
-                {/* <Button
-                  className={classes.buyNowBtn}
-                  variant="contained"
-                  onClick={() => {
-                    console.log("items");
-                  }}
-                >
-                  Buy Now
-                </Button> */}
+                {value.quantity > 0 ? (
+                  <IconButton
+                    aria-label="share"
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "unset !important",
+                      },
+                    }}
+                  >
+                    <RemoveOutlined
+                      onClick={() => {
+                        reduceCarQuantity(value.cart_id);
+                        // console.log(item);
+                      }}
+                      sx={{
+                        mr: 3,
+                        color: "orange",
+                      }}
+                    />
+
+                    <Box>
+                      <Button
+                        sx={{
+                          padding: 0,
+                          color: "teal",
+                          // cursor: "pointer",
+                          "&:hover": {
+                            backgroundColor: "unset !important",
+                            color: "#fff",
+                          },
+                        }}
+                        // disabled
+                      >
+                        {value.quantity}
+                      </Button>
+                      <AddOutlined
+                        onClick={() => {
+                          increaseCarQuantity(value.cart_id);
+                          // console.log(item);
+                        }}
+                        sx={{
+                          ml: 3,
+                          color: "orange",
+                        }}
+                      />
+                    </Box>
+                  </IconButton>
+                ) : (
+                  <Button
+                    className={classes.itemCardbtn}
+                    variant="outlined"
+                    onClick={() => CreateCart()}
+                  >
+                    Add to cart
+                  </Button>
+                )}
               </Box>
               <Box sx={{ mt: 3 }}>
                 <Typography variant="h6">Description:-</Typography>
@@ -113,7 +418,29 @@ function SingleProduct() {
   );
 }
 
-export default SingleProduct;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    createCart: (data, successCallBack, failureCallBack) =>
+      dispatch(cartActions.createCart(data, successCallBack, failureCallBack)),
+    addToCart: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        cartActions.addToCartAction(data, successCallBack, failureCallBack)
+      ),
+    getCartItems: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        cartActions.getCartItems(data, successCallBack, failureCallBack)
+      ),
+    reduceCartItem: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        cartActions.reduceCartItem(data, successCallBack, failureCallBack)
+      ),
+    increaseCartItem: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        cartActions.increaseCartItem(data, successCallBack, failureCallBack)
+      ),
+  };
+};
+export default connect(null, mapDispatchToProps)(SingleProduct);
 
 const useStyles = makeStyles((theme) => ({
   mainDivMiddle: {

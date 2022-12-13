@@ -521,7 +521,8 @@ const SavedAddress = () => {
                     // onClick={handleOnChange("home")}
                     style={{
                       background:
-                        addressDetails.addressType == "home" && "#66B2FF",
+                        addressDetails.addressType == "home" &&
+                        CONST.primaryColor,
                       color: addressDetails.addressType == "home" && "#fff",
                     }}
                   >
@@ -547,35 +548,15 @@ const SavedAddress = () => {
                     }
                     style={{
                       background:
-                        addressDetails.addressType == "work" && "#66B2FF",
+                        addressDetails.addressType == "work" &&
+                        CONST.primaryColor,
                       color: addressDetails.addressType == "work" && "#fff",
                     }}
                   >
                     <BusinessIcon />
                     <Typography>Work</Typography>
                   </Grid>
-
-                  {addressDetails.addressType}
                 </Grid>
-                {/* <Stack direction="row" spacing={1}>
-                    <Chip
-                      onClick={() => setAddressType("home")}
-                      icon={<HouseIcon />}
-                      label="Home"
-                      className={classes.chipStyle}
-                    />
-                    <Chip
-                      onClick={() => setAddressType("work")}
-                      icon={<BusinessIcon style={{ color: "#fff" }} />}
-                      label="Work"
-                      className={classes.chipStyle}
-                      style={{
-                        background: addressType == "work" && "#66B2FF",
-                        color: addressType == "work" && "#fff",
-                      }}
-                    />
-                    {addressType}
-                  </Stack> */}
               </Grid>
 
               <Grid item xs={12} mt={2}>
@@ -619,32 +600,29 @@ const useStyles = makeStyles((theme) => ({
     width: "350px",
     maxWidth: "350px",
     padding: "2%",
-    // margin: "24px 24px 0px 0px",
-
     border: "1px solid #e6e6e6",
     borderRadius: "8px",
     backgroundColor: "#fff",
-    boxShadow: "0px 2px 4px rgb(102, 178, 255, 0.3)",
+    // boxShadow: "0px 2px 4px rgb(102, 178, 255, 0.3)",
   },
   btncontainedPrimary: {
     fontSize: "16px",
     color: "#fff",
-    background: "#66B2FF",
+    background: theme.palette.primary.main,
     borderRadius: "25px",
     boxShadow: "none",
     letterSpacing: "1px",
     textTransform: "none",
     "&:hover": {
       boxShadow: "none",
-      background: "#66B2FF",
+      background: theme.palette.primary.main,
     },
   },
   btnOutlinedPrimary: {
     fontSize: "16px",
     color: "#8e8e8e",
     background: "#fff",
-    // background: "	#f8f8ff",
-    border: "1px solid #66B2FF ",
+    border: `1px solid ${theme.palette.primary.main}`,
     borderRadius: "25px",
     boxShadow: "none",
     letterSpacing: "1px",
@@ -657,10 +635,10 @@ const useStyles = makeStyles((theme) => ({
     },
     "&:hover": {
       boxShadow: "none",
-      background: "#66B2FF",
-      // background: "#f8f8ff",
+      background: theme.palette.primary.main,
       color: " #fff",
-      border: "1px solid #66B2FF ",
+      border: `1px solid ${theme.palette.primary.main}`,
+
       "& .MuiSvgIcon-root": {
         color: "#fff",
       },
@@ -679,7 +657,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "24px",
     textTransform: "none",
     backgroundColor: "#fff",
-    border: "1px solid #66B2FF",
+    border: `1px solid ${theme.palette.primary.main}`,
     fontSize: CONST.FONT_SIZE_16,
     cursor: "pointer",
     "& .MuiSvgIcon-root": {
@@ -693,7 +671,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "24px",
     textTransform: "none",
     backgroundColor: "#fff",
-    border: "1px solid #66B2FF",
+    border: `1px solid ${theme.palette.primary.main}`,
     fontSize: CONST.FONT_SIZE_16,
     color: "#8e8e8e",
     cursor: "pointer",

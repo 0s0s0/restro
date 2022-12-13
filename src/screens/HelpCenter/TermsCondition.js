@@ -5,6 +5,8 @@ import { makeStyles } from "@mui/styles";
 import { Grid, Typography } from "@mui/material";
 import useCustomDispatch from "../../hooks/useDispatch";
 
+// import renderHTML from "react-render-html";
+
 const TermsCondition = () => {
   const classes = useStyles();
 
@@ -14,6 +16,10 @@ const TermsCondition = () => {
     console.log("successcall back", res);
     setData(res.data);
   };
+
+  let para = data[1]?.description;
+  para = para?.replace("<p>", "");
+  para = para?.replace("</p>", "");
 
   //dispatching action using custom hook
   useCustomDispatch("TERMS_N_CONDITION_SAGA", successcallback);
@@ -30,8 +36,9 @@ const TermsCondition = () => {
   return (
     <Grid className={classes.helpCenterBox}>
       <Typography variant="h4">{data[1]?.title}</Typography>
-
-      <Typography>{data[1]?.description}</Typography>
+      {/* <Typography>{data[1]?.description}</Typography> */}
+      <Typography>{para}</Typography>
+      {/* renderHTML(para) */}
     </Grid>
   );
 };

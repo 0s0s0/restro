@@ -1,3 +1,5 @@
+import * as type from '../../utils/Constants';
+
 const initialState = {
   products: [],
   cartCount: 0,
@@ -5,15 +7,33 @@ const initialState = {
   totalAmount: 0,
   cartProducts: [],
   favoriteProducts: [],
+  cartData: [],
+  createCartResponse: [],
+  addToCartResponse: [],
+  getCartitems: [],
+  reduceCartItem: [],
+  increasCartItem: [],
+  removeCartItem: [],
 };
 
 export const cartReducer = (state = initialState, action) => {
   switch (action.type) {
+    case "CART_DATA":
+      let count = action.data.cart_items && action.data.cart_items.length;
+      // let count = action.data.cart_items. && action.data.cart_items.length;
+
+      return {
+        ...state,
+        cartData: action.data,
+        cartCount: count,
+      };
+
     case "PRODUCTS":
       return {
         ...state,
         products: [...action.products],
       };
+
     case "ADD_ITEMS": {
       let updateProduct = state.products.map((i) => {
         if (i.id === action.data.id) {
@@ -106,6 +126,115 @@ export const cartReducer = (state = initialState, action) => {
       };
     }
 
+
+    case type.CREATE_CART_REQUESTED:
+      return {
+        ...state,
+        loading: true,
+      }
+    case type.CREATE_CART_SUCCESS:
+      return {
+        ...state,
+        createCartResponse: action.createCartResponse,
+        loading: false,
+      };
+    case type.CREATE_CART_FAILED:
+      return {
+        ...state,
+        loading: false,
+        error: action.message,
+      };
+    case type.ADD_TO_CART_REQUESTED:
+      return {
+        ...state,
+        loading: true,
+      }
+    case type.ADD_TO_CART_SUCCESS:
+      // console.log('items in a cart---------->', [action.addToCartResponse, ...state.getCartitems.cart_items])
+      // console.log('get cart ---->', state.getCartitems.cart_items);
+      return {
+        ...state,
+        addToCartResponse: action.addToCartResponse,
+        loading: false,
+      };
+    case type.ADD_TO_CART_FAILED:
+      return {
+        ...state,
+        loading: false,
+        error: action.message,
+      };
+    case type.GET_CART_ITEMS_REQUESTED:
+      return {
+        ...state,
+        loading: true,
+      }
+    case type.GET_CART_ITEMS_SUCCESS:
+      console.log('get cart items reducer ---->', action.getCartItemsResponse)
+      return {
+        ...state,
+        getCartitems: action.getCartItemsResponse,
+        loading: false,
+      };
+    case type.GET_CART_ITEMS_FAILED:
+      return {
+        ...state,
+        loading: false,
+        error: action.message,
+      };
+
+    case type.REDUCE_CART_QUANTITY_REQUESTED:
+      return {
+        ...state,
+        loading: true,
+      }
+    case type.REDUCE_CART_QUANTITY_SUCCESS:
+      return {
+        ...state,
+        reduceCartItem: action.reduceCartItemResponse,
+        loading: false,
+      };
+    case type.REDUCE_CART_QUANTITY_FAILED:
+      return {
+        ...state,
+        loading: false,
+        error: action.message,
+      };
+    case type.INCREASE_CART_QUANTITY_REQUESTED:
+      return {
+        ...state,
+        loading: true,
+      }
+    case type.INCREASE_CART_QUANTITY_SUCCESS:
+      return {
+        ...state,
+        increasCartItem: action.increasCartItemResponse,
+        loading: false,
+      };
+    case type.INCREASE_CART_QUANTITY_FAILED:
+      return {
+        ...state,
+        loading: false,
+        error: action.message,
+      };
+    case type.REMOVE_FROM_CART_REQUESTED:
+      return {
+        ...state,
+        loading: true,
+      }
+    case type.REMOVE_FROM_CART_SUCCESS:
+      console.log('remove item count', [...state.getCartitems.cart_items])
+      return {
+        ...state,
+        removeCartItem: action.removeCartItemResponse,
+        // addToCartResponse: [...state.getCartitems.cart_items],
+        loading: false,
+      };
+    case type.REMOVE_FROM_CART_FAILED:
+      return {
+        ...state,
+        loading: false,
+        error: action.message,
+      };
     default:
       return {
         ...state,

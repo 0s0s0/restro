@@ -1,4 +1,5 @@
 import * as CONST from "../../utils/Constants";
+
 import { all, fork, takeEvery } from "redux-saga/effects";
 import {
   userLogin,
@@ -29,7 +30,14 @@ import {
 } from "./savedAddressSaga";
 import { useEffect } from "react";
 
+import {
+  addToWishlist,
+  getWishlist,
+  removeWishlist
+} from "./wishlistSaga";
+
 import { addWishList } from "./products";
+import { addToCart, createCart, getCartItems, increaseCartItem, reduceCartItem, removeCartItem } from "./cartSaga";
 
 const watchUser = function* watchUser() {
   yield takeEvery(CONST.USER_LOGIN_SAGA, userLogin);
@@ -57,6 +65,17 @@ const watchUser = function* watchUser() {
   yield takeEvery(CONST.UPDATE_ADDRESS, editAddress);
   yield takeEvery(CONST.DELETE_ADDRESS, deleteAddress);
   // yield takeEvery("ADD_WISHLIST", addWishList);
+
+  yield takeEvery(CONST.CREATE_CART_REQUESTED, createCart);
+  yield takeEvery(CONST.ADD_TO_CART_REQUESTED, addToCart);
+  yield takeEvery(CONST.GET_CART_ITEMS_REQUESTED, getCartItems);
+  yield takeEvery(CONST.INCREASE_CART_QUANTITY_REQUESTED, increaseCartItem);
+  yield takeEvery(CONST.REDUCE_CART_QUANTITY_REQUESTED, reduceCartItem);
+  yield takeEvery(CONST.REMOVE_FROM_CART_REQUESTED, removeCartItem);
+
+  yield takeEvery(CONST.ADD_TO_FAVORITE, addToWishlist);
+  yield takeEvery(CONST.GET_FAVORITE, getWishlist);
+  yield takeEvery(CONST.REMOVE_FROM_FAVORITE, removeWishlist);
 };
 
 const rootSaga = function* mySagas() {

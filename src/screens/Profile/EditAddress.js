@@ -101,7 +101,7 @@ const EditAddress = (props) => {
         onClick={() => props.close()}
         className={classes.closeIconStyle}
       />
-      <DialogTitle>Edit address</DialogTitle>
+      <DialogTitle>Edit Address</DialogTitle>
       <Divider />
       <Grid
         container
@@ -192,46 +192,17 @@ const useStyles = makeStyles((theme) => ({
   btncontainedPrimary: {
     fontSize: "16px",
     color: "#fff",
-    background: "#66B2FF",
+    background: theme.palette.primary.main,
     borderRadius: "25px",
     boxShadow: "none",
     letterSpacing: "1px",
     textTransform: "none",
     "&:hover": {
       boxShadow: "none",
-      background: "#66B2FF",
+      background: theme.palette.primary.main,
     },
   },
-  btnOutlinedPrimary: {
-    fontSize: "16px",
-    color: "#8e8e8e",
-    background: "#fff",
-    // background: "	#f8f8ff",
-    border: "1px solid #66B2FF ",
-    borderRadius: "25px",
-    boxShadow: "none",
-    letterSpacing: "1px",
-    textTransform: "none",
-    "& .MuiSvgIcon-root": {
-      // fontSize: 30,
-      // marginLeft: 1,
-      // color: theme.palette.primary.main,
-      color: "#8e8e8e",
-    },
-    "&:hover": {
-      boxShadow: "none",
-      background: "#66B2FF",
-      // background: "#f8f8ff",
-      color: " #fff",
-      border: "1px solid #66B2FF ",
-      "& .MuiSvgIcon-root": {
-        color: "#fff",
-      },
-    },
-    [theme.breakpoints.down("sm")]: {
-      fontSize: CONST.FONT_SIZE_12,
-    },
-  },
+
   closeIconStyle: {
     position: "absolute",
     top: "20px",
@@ -242,7 +213,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "24px",
     textTransform: "none",
     backgroundColor: "#fff",
-    border: "1px solid #66B2FF",
+    border: `1px solid ${theme.palette.primary.main}`,
     fontSize: CONST.FONT_SIZE_16,
     cursor: "pointer",
     "& .MuiSvgIcon-root": {
@@ -256,7 +227,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "24px",
     textTransform: "none",
     backgroundColor: "#fff",
-    border: "1px solid #66B2FF",
+    border: `1px solid ${theme.palette.primary.main}`,
     fontSize: CONST.FONT_SIZE_16,
     color: "#8e8e8e",
     cursor: "pointer",
@@ -303,8 +274,6 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       color: "#000",
       background: "#fff",
-      // color: "#fff",
-      // background: theme.palette.primary.main,
     },
   },
 }));

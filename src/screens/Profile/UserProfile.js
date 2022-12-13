@@ -354,7 +354,8 @@ const UserProfile = () => {
           <label htmlFor="file-input">
             <Box
               component="img"
-              src={selectedImage == null ? User : selectedImage}
+              src={selectedImage || User}
+              // src={selectedImage == null ? User : selectedImage}
               sx={{ borderRadius: 1, p: 2, border: "1px solid #e6e6e6 " }}
               style={{
                 width: 100,
@@ -427,7 +428,7 @@ const UserProfile = () => {
                         InputProps={{ disableUnderline: true }}
                         className={classes.EditProfileFields}
                       />
-                      {name.length == 0 && nameError && (
+                      {name?.length === 0 && nameError && (
                         <Typography className={classes.ErrorText}>
                           Name required
                         </Typography>
@@ -475,7 +476,7 @@ const UserProfile = () => {
                         InputProps={{ disableUnderline: true }}
                         className={classes.EditProfileFields}
                       />
-                      {myEmail.length == 0 && emailError && (
+                      {myEmail?.length === 0 && emailError && (
                         <Typography className={classes.ErrorText}>
                           Email required
                         </Typography>
@@ -528,7 +529,7 @@ const UserProfile = () => {
                         InputProps={{ disableUnderline: true }}
                         className={classes.EditProfileFields}
                       />
-                      {phone.length == 0 && phoneError && (
+                      {phone?.length === 0 && phoneError && (
                         <Typography className={classes.ErrorText}>
                           Phone required
                         </Typography>
@@ -576,13 +577,13 @@ const UserProfile = () => {
             Change Password
           </Button>
 
-          <Button
+          {/* <Button
             variant="contained"
             className={classes.btncontainedPrimary}
             onClick={() => setOpenEditProfile(true)}
           >
             Edit Profile
-          </Button>
+          </Button> */}
         </Grid>
       </Grid>
       {openEditProfile && (
@@ -605,8 +606,16 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "8px",
     backgroundColor: "#fff",
   },
+
   editBtn: {
+    color: theme.palette.primary.main,
     textTransform: "none",
+    letterSpacing: 1,
+    borderRadius: "24px",
+    "&:hover": {
+      color: "#000",
+      background: "#fff",
+    },
   },
   profileFields: {
     fontWeight: 430,
@@ -617,33 +626,29 @@ const useStyles = makeStyles((theme) => ({
     color: "#000",
     // background: "#fff",
     background: "	#f8f8ff",
-    border: "1px solid #66B2FF ",
+    border: `1px solid ${theme.palette.primary.main}`,
     borderRadius: "25px",
     boxShadow: "none",
     letterSpacing: "1px",
     textTransform: "none",
-    "& .MuiSvgIcon-root": {
-      fontSize: 30,
-      marginLeft: 1,
-      color: theme.palette.primary.main,
-    },
+
     "&:hover": {
       boxShadow: "none",
       background: "#f8f8ff",
-      border: "1px solid #66B2FF ",
+      border: `1px solid ${theme.palette.primary.main}`,
     },
   },
   btncontainedPrimary: {
     fontSize: "16px",
     color: "#fff",
-    background: "#66B2FF",
+    background: theme.palette.primary.main,
     borderRadius: "25px",
     boxShadow: "none",
     letterSpacing: "1px",
     textTransform: "none",
     "&:hover": {
       boxShadow: "none",
-      background: "#66B2FF",
+      background: theme.palette.primary.main,
     },
   },
   EditProfileFields: {

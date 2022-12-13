@@ -7,29 +7,34 @@ import { makeStyles } from "@mui/styles";
 import RecommendSlider from "../../components/Recommended/RecommendSlider";
 import Slider from "../../components/Slider";
 import DATA from "../../DATA.json";
-import { useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import FoodCard from "../../components/Card/FoodCard";
 import { useNavigate } from "react-router-dom";
 import AddCart from "../../components/Card/AddCart";
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
+import * as wishlistAction from "../../redux/actions/wishlistAction";
 
-const Landing = () => {
+const Landing = ({ ...props }) => {
   const dispatch = useDispatch();
-  const base_url = "https://gentle-dusk-70757.herokuapp.com/";
-  const product_list = "api/v1/items";
   const classes = useStyles();
   const navigate = useNavigate();
   const cartProducts = useSelector((state) => state.cartReducer.products);
   const [foodData, setFoodData] = useState([]);
+  const [favoriteData, setFavoriteData] = useState();
+
   // const [data, setData] = useState([]);
   const productsRedux = useSelector((state) => state.cartReducer.products);
 
+  const user_id = useSelector(
+    (state) => state?.userReducer?.userProfileData?.data?.data?.id
+  );
   const foodList = async () => {
+    let userID = await localStorage.getItem("userId");
     try {
       const data = await axios.get(
-        "https://gentle-dusk-70757.herokuapp.com/api/v1/items?direction=asc&search=&user_id=1",
+        `https://gentle-dusk-70757.herokuapp.com/api/v1/items?direction=asc&search=&user_id=${userID}`,
         {
           headers: {
             Accept: "application/json",
@@ -38,7 +43,7 @@ const Landing = () => {
         }
       );
       // console.log(data);
-      setFoodData(data.data);
+      setFoodData(data.data.data);
       // console.log("====================================");
       // foodData.data && console.log(foodData.data);
 
@@ -53,7 +58,30 @@ const Landing = () => {
 
   useEffect(() => {
     foodList();
+    GetWishList();
   }, []);
+
+  const GetWishList = async () => {
+    let userID = await localStorage.getItem("userId");
+    let data = {
+      user_id: userID,
+      // favourite_id: 1
+    };
+
+    console.log("GetWishList ==>", data);
+    props.getWishlist(
+      data,
+      (res) => getWishlistSuccessCallBack(res),
+      (err) => getWishlistFailureCallBack(err)
+    );
+  };
+
+  const getWishlistSuccessCallBack = (res) => {
+    console.log("Res ==>", res);
+    setFavoriteData(res.favourite_id);
+  };
+
+  const getWishlistFailureCallBack = () => {};
 
   return (
     <Grid
@@ -74,18 +102,6 @@ const Landing = () => {
         xl={8}
         // sx={{ backgroundColor: "red" }}
       >
-        <Grid
-          container
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ px: 2, pt: 3, mt: 3, mb: 2 }}
-        >
-          <Typography variant="h4" className={classes.fontSize16}>
-            Food that makes you say wow...
-          </Typography>
-          <Button sx={{ textTransform: "none" }}>View all</Button>
-        </Grid>
-
         <Grid container display="flex" justifyContent="space-between"></Grid>
       </Grid>
       <Grid
@@ -122,14 +138,14 @@ const Landing = () => {
           justifyContent="space-between"
           className={classes.newDishesDiv}
         >
-          {productsRedux.slice(0, 8).map((item) => {
+          {foodData.slice(0, 8).map((item) => {
             return (
               <Grid
                 item
                 xs={12}
                 sm={6}
                 md={3}
-                lg={5}
+                lg={3}
                 xl={3}
                 sx={{ display: "flex", justifyContent: "center" }}
                 key={item.id}
@@ -142,6 +158,10 @@ const Landing = () => {
                   items={item}
                   width="180px"
                   fav={item.added_in_wishlist}
+                  user={user_id}
+                  props={props}
+                  favourite_id={favoriteData}
+                  reload_product={foodList}
                 />
               </Grid>
             );
@@ -149,7 +169,7 @@ const Landing = () => {
         </Grid>
       </Grid>
 
-      <Grid item xs={12} sm={12} md={12} lg={8} xl={8}>
+      <Grid item xs={12} sm={12} md={12} lg={8} xl={8} sx={{ pb: 3 }}>
         <Grid container>
           <Slider />
         </Grid>
@@ -245,4 +265,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-export default Landing;
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getWishlist: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        wishlistAction.getWishlist(data, successCallBack, failureCallBack)
+      ),
+  };
+};
+export default connect(null, mapDispatchToProps)(Landing);

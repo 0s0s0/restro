@@ -172,10 +172,9 @@ export const verifyOtpPhone = function* verifyOtpPhoneSaga(action) {
         });
       } else {
         console.log("inside res @@@@@@@");
-        // yield put(ACTIONS_CONST.userChangedPassword(res));
-        // yield put({ type: "VERIFY_PHONE_OTP_ACTION", payload: res.data });
         yield action.payload.close();
-        yield put({ type: "USER_PROFILE_ACTION", payload: res?.data });
+        yield put({ type: "USER_PROFILE_SAGA" });
+
         yield put({ type: "CLOSE_OTP_BOX" });
         yield action.payload.emptyOTP("");
         yield put({ type: "LOADER_CLOSE" });
@@ -222,7 +221,9 @@ export const verifyOtpEmail = function* verifyOtpEmailSaga(action) {
       } else {
         console.log("inside res @@@@@@@");
 
-        yield put({ type: "USER_PROFILE_ACTION", payload: res.data });
+        // yield put({ type: "USER_PROFILE_ACTION", payload: res.data });
+        yield put({ type: "USER_PROFILE_SAGA" });
+
         yield put({ type: "CLOSE_OTP_BOX" });
         // yield put({ type: "LOADER_CLOSE" });
         yield action.payload.close();
@@ -262,7 +263,8 @@ export const updateUserProfile = function* updateUserProfileSaga(action) {
     const res = yield call(performPatchRequestEditProfile, path, body);
 
     if (res !== undefined && res.status === 200) {
-      yield put({ type: "USER_PROFILE_ACTION", payload: res.data });
+      // yield put({ type: "USER_PROFILE_ACTION", payload: res.data });
+      yield put({ type: "USER_PROFILE_SAGA" });
       yield action.payload.close();
       yield put({
         type: "SHOW_TOAST",
@@ -299,10 +301,16 @@ export const updateUserProfile = function* updateUserProfileSaga(action) {
     }
   } catch (er) {
     console.log("@@@ update profile API error ========", er);
-    yield put({
-      type: "SHOW_TOAST",
-      payload: { severity: "error", message: er?.response?.data?.message },
-    });
+    if (er?.response.status === 500)
+      yield put({
+        type: "SHOW_TOAST",
+        payload: { severity: "error", message: er?.response.statusText },
+      });
+    else
+      yield put({
+        type: "SHOW_TOAST",
+        payload: { severity: "error", message: er?.response?.data?.message },
+      });
   }
 };
 

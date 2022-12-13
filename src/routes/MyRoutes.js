@@ -23,6 +23,7 @@ import TermsCondition from "../screens/HelpCenter/TermsCondition";
 import OthersHelpCenter from "../screens/HelpCenter/OthersHelpCenter";
 import Landing from "../screens/LandingPage/Landing";
 import SingleProduct from "../screens/HomePage/SingleProduct";
+import CheckOut from "../screens/Checkout/CheckOut";
 
 const MyRoutes = () => {
   return (
@@ -46,6 +47,7 @@ const MyRoutes = () => {
           <Route index element={<Landing />} />
           <Route path="product-detail" element={<SingleProduct />} />
           <Route path="cart" element={<Cart />} />
+          <Route path="check-out" element={<CheckOut />} />
           <Route path="contact-us" element={<ContactUs />} />
           <Route path="about-us" element={<AboutUs />} />
           <Route path="shops" element={<Shops />} />

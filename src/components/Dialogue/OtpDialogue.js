@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from "react-redux";
 import OtpInputs from "../OtpInputs/OtpInputs";
 
 import {
-  TypographyText,
   LightText,
   TypographyTextLargerBold,
 } from "../StyledComponents/StyledComponents ";
@@ -27,27 +26,8 @@ const OtpDialogue = () => {
   const userDetails = useSelector(
     (state) => state.userReducer.userProfileData.data.data
   );
-  // const email_Phone = useSelector(
-  //   (state) => state.loaderReducer.editedEmail_Phone
-  // );
-  // const otp_type = useSelector((state) => state.loaderReducer.otp_type);
-  // console.warn("email_Phone and OTp Type", email_Phone);
 
-  //state to store otp value
   const [otp, setOtp] = useState("");
-
-  // const successCallback = (res) => {
-  //   if (res.status === 200 && res?.data?.otp_data?.otp_type == "email_update") {
-  //     dispatch({
-  //       type: "GEN_PHONE_OTP_SAGA",
-  //       payload: {
-  //         id: userDetails?.id,
-  //         phone: editData.phone,
-  //         type: "phone_update",
-  //       },
-  //     });
-  //   }
-  // };
 
   const editProfileData = useSelector(
     (state) => state.userReducer.EditProfileData
@@ -172,37 +152,17 @@ const useStyles = makeStyles((theme) => ({
   btncontainedPrimary: {
     fontSize: "16px",
     color: "#fff",
-    background: "#66B2FF",
+    background: theme.palette.primary.main,
     borderRadius: "25px",
     boxShadow: "none",
     letterSpacing: "1px",
     textTransform: "none",
     "&:hover": {
       boxShadow: "none",
-      background: "#66B2FF",
+      background: theme.palette.primary.main,
     },
   },
-  btnOutlinedPrimary: {
-    fontSize: "16px",
-    color: "#000",
-    // background: "#fff",
-    background: "	#f8f8ff",
-    border: "1px solid #66B2FF ",
-    borderRadius: "25px",
-    boxShadow: "none",
-    letterSpacing: "1px",
-    textTransform: "none",
-    "& .MuiSvgIcon-root": {
-      fontSize: 30,
-      marginLeft: 1,
-      color: theme.palette.primary.main,
-    },
-    "&:hover": {
-      boxShadow: "none",
-      background: "#f8f8ff",
-      border: "1px solid #66B2FF ",
-    },
-  },
+
   ErrorText: {
     marginLeft: "8px",
     fontSize: CONST.FONT_SIZE_12,

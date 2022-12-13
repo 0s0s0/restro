@@ -8,14 +8,13 @@ const OthersHelpCenter = () => {
   return (
     <>
       <Grid className={classes.helpCenterBox}>
-        <Typography variant="h4">Others</Typography>
+        <Typography variant="h4">Content Policy</Typography>
       </Grid>
     </>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
-  
   helpCenterBox: {
     padding: "24px",
     border: "1px solid #e6e6e6",

@@ -8,10 +8,15 @@ import Footer from "./Footer";
 import { makeStyles } from "@mui/styles";
 import useCustomDispatch from "../../hooks/useDispatch";
 import DATA from "../../DATA.json";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import { addToCart, cartData } from "../../redux/actions/cartActions";
 
-const HomePage = () => {
+const HomePage = ({}) => {
+  const cartProducts = useSelector((state) => state.cartReducer.cartProducts);
+  const user_id = useSelector(
+    (state) => state?.userReducer?.userProfileData?.data?.data?.id
+  );
   const [btnDisplay, setBtnDisplay] = useState("none");
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -20,7 +25,7 @@ const HomePage = () => {
   const foodList = async () => {
     try {
       const data = await axios.get(
-        "https://gentle-dusk-70757.herokuapp.com/api/v1/items?direction=asc&search=&user_id=1",
+        `https://gentle-dusk-70757.herokuapp.com/api/v1/items?direction=asc&search=&user_id=${user_id}`,
         {
           headers: {
             Accept: "application/json",
@@ -42,12 +47,11 @@ const HomePage = () => {
   };
 
   // let id = useSelector((state) => state.userReducer.userId);
-  const id = JSON.parse(localStorage.getItem("userId"));
 
   useEffect(() => {
     foodList();
     // dispatch({ type: "PRODUCTS", products: foodData.data });
-  }, []);
+  }, [user_id]);
 
   foodData.data && dispatch({ type: "PRODUCTS", products: foodData.data });
 

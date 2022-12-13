@@ -17,6 +17,10 @@ const PrivacyPolicy = () => {
     setData(res.data);
   };
 
+  let para = data[0]?.description;
+  para = para?.replace("<p>", "");
+  para = para?.replace("</p>", "");
+
   //custom hook.....
   useCustomDispatch("TERMS_N_CONDITION_SAGA", successcallback);
   // useEffect(() => {
@@ -26,7 +30,8 @@ const PrivacyPolicy = () => {
   return (
     <Grid className={classes.helpCenterBox}>
       <Typography variant="h4">{data[0]?.title}</Typography>
-      <Typography>{data[0]?.description}</Typography>
+      {/* <Typography>{data[0]?.description}</Typography> */}
+      <Typography>{para}</Typography>
     </Grid>
   );
 };

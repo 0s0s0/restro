@@ -5,39 +5,277 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import NoCartItemIcon from "../../assets/no-cart.png";
 
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import {
-  increment,
-  decrement,
-  removeCartProduct,
-} from "../../redux/actions/cartActions";
 
 import { makeStyles } from "@mui/styles";
 import {
+  AddOutlined,
   Favorite,
   FavoriteOutlined,
+  RemoveOutlined,
   ResetTvRounded,
 } from "@mui/icons-material";
+import axios from "axios";
+import { useEffect } from "react";
+import { useState } from "react";
+import Payment from "../Payment/Payment";
+import { connect } from "react-redux";
+import * as cartActions from "../../redux/actions/cartActions";
 
-const Cart = () => {
+const Cart = ({
+  getCartItems,
+  reduceCartItem,
+  increaseCartItem,
+  removeCartItem,
+}) => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const params = useParams();
   console.log("prama", params);
   const dispatch = useDispatch();
-
+  const user_id = useSelector(
+    (state) => state?.userReducer?.userProfileData?.data?.data?.id
+  );
   const theme = useTheme();
-  const sizeXs = useMediaQuery(theme.breakpoints.down("xs"));
-  const sm = useMediaQuery(theme.breakpoints.down("sm"));
-  const md = useMediaQuery(theme.breakpoints.down("md"));
-  const lg = useMediaQuery(theme.breakpoints.down("lg"));
-  const xl = useMediaQuery(theme.breakpoints.up("xl"));
 
   const cartProducts = useSelector((state) => state.cartReducer.cartProducts);
   const cartCount = useSelector((state) => state.cartReducer.cartCount);
-  const totalAmount = useSelector((state) => state.cartReducer.totalAmount);
-  console.log(cartProducts);
+  // const totalAmount = useSelector((state) => state.cartReducer.totalAmount);
+  const total = [];
+  const [amount, setAmount] = useState(0);
+  const productSummary = [
+    {
+      id: 1,
+      description: "product desctription",
+      quantity: 3,
+      amount: 200,
+    },
+    {
+      id: 2,
+      description: "product desctription",
+      quantity: 2,
+      amount: 200,
+    },
+    {
+      id: 3,
+      description: "product desctription",
+      quantity: 5,
+      amount: 1000,
+    },
+  ];
+  const [cartData, setCartData] = useState();
+  const [updateTotal, setUpdateTotal] = useState(false);
+
+  console.log(cartProducts && cartProducts);
+  const totalValue = (value) => {
+    setAmount(value.reduce((a, b) => a + b, 0));
+    return amount;
+  };
+  useEffect(() => {
+    totalValue(total);
+  }, [total]);
+  useEffect(() => {
+    GetCartItems();
+  }, [updateTotal]);
+
+  let cart_items_price = 0;
+  cart_items_price = cartData?.cart_items.map(
+    (item, index) => item.item_price * item.cart_quantity + cart_items_price
+  );
+
+  const totalAmount = cart_items_price?.reduce((index, value) => {
+    return index + value;
+  }, 0);
+
+  // const handleAddCart = async (id) => {
+  //   // setAdded(added + 1);
+
+  //   try {
+  //     // if (added <= 0)
+
+  //     let add_to_cart = await axios.post(
+  //       `https://gentle-dusk-70757.herokuapp.com/api/v1/line_items?cart_id=${user_id + 1
+  //       }&item_id=${id}`,
+  //       {
+  //         headers: {
+  //           Accept: "application/json",
+  //           "Content-Type": "application/json; charset=utf-8",
+  //         },
+  //       }
+  //     );
+  //     console.log(add_to_cart.data);
+  //     // setAdded(add_to_cart.data.data.quantity);
+  //     // setRemove(add_to_cart.data.data.id);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  const GetCartItems = async () => {
+    let user_id = await JSON.parse(localStorage.getItem("userId"));
+    console.log("user_id ", user_id);
+    let data = {
+      id: user_id,
+    };
+
+    getCartItems(
+      data,
+      (res) => getCartItemsSuccessCallback(res),
+      (err) => getCartItemsFailureCallBack(err)
+    );
+  };
+
+  const getCartItemsSuccessCallback = (res) => {
+    console.log("Get cart items Successcall Back @@@@@@@@@@@ ----->", res);
+    try {
+      if (res.success == true) {
+        console.log(
+          "&&&&&&&&&&&&&&&& Cat items @@@@@@@@@@@ ----->",
+          res.cart_items.length
+        );
+        // setItemsIncart(res.cart_items.length);
+        setCartData(res);
+      } else {
+        // let message = res.message;
+        // WToast.show({ data: 'Something went wrong' });
+      }
+    } catch (err) {
+      //   Sentry.captureException(err);
+      console.log("Error", err);
+    }
+  };
+
+  const getCartItemsFailureCallBack = (error) => {
+    console.log("get cart items failurecalll back--------------->", error);
+  };
+  const reduceCarQuantity = (id) => {
+    let data = {
+      id: id,
+    };
+    reduceCartItem(
+      data,
+      (res) => reduceCartItemSuccessCallback(res),
+      (err) => reduceCartItemFailureCallBack(err)
+    );
+  };
+  const reduceCartItemSuccessCallback = (res) => {
+    console.log("Reduce cart item Successcall Back @@@@@@@@@@@ ----->", res);
+    try {
+      if (res.success == true) {
+        GetCartItems();
+        setUpdateTotal(!updateTotal);
+        // WToast.show({ data: res.message });
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            severity: "success",
+            message: res.message,
+          },
+        });
+      } else {
+        // let message = res.message;
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            severity: "error",
+            message: "Some thing went wrong",
+          },
+        });
+      }
+    } catch (err) {
+      //   Sentry.captureException(err);
+      console.log("Error", err);
+    }
+  };
+
+  const reduceCartItemFailureCallBack = (error) => {
+    console.log("reduce cart item failurecalll back--------------->", error);
+  };
+
+  const increaseCarQuantity = (id) => {
+    // alert(id);
+    let data = {
+      id: id,
+    };
+    increaseCartItem(
+      data,
+      (res) => increaseCartItemSuccessCallback(res),
+      (err) => increaseCartItemFailureCallBack(err)
+    );
+  };
+  const increaseCartItemSuccessCallback = (res) => {
+    console.log("increase cart item Successcall Back @@@@@@@@@@@ ----->", res);
+    try {
+      if (res.success == true) {
+        setUpdateTotal(!updateTotal);
+        GetCartItems();
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            severity: "success",
+            message: res.message,
+          },
+        });
+      } else {
+        // let message = res.message;
+
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            severity: "error",
+            message: "Some thing went wrong",
+          },
+        });
+      }
+    } catch (err) {
+      //   Sentry.captureException(err);
+      console.log("Error", err);
+    }
+  };
+
+  const increaseCartItemFailureCallBack = (error) => {
+    console.log("increase cart item failurecalll back--------------->", error);
+  };
+
+  const deleteCartItem = (id) => {
+    // alert(id);
+    let data = {
+      id: id,
+    };
+    removeCartItem(
+      data,
+      (res) => removeCartItemSuccessCallback(res),
+      (err) => removeCartItemFailureCallBack(err)
+    );
+  };
+  const removeCartItemSuccessCallback = (res) => {
+    console.log("remove cart item Successcall Back @@@@@@@@@@@ ----->", res);
+    try {
+      if (res.success == true) {
+        setUpdateTotal(!updateTotal);
+        GetCartItems();
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            severity: "success",
+            message: res.message,
+          },
+        });
+      } else {
+        // let message = res.message;
+        // WToast.show({ data: 'Something went wrong' });
+      }
+    } catch (err) {
+      //   Sentry.captureException(err);
+      console.log("Error", err);
+    }
+  };
+
+  const removeCartItemFailureCallBack = (error) => {
+    console.log("remove cart item failurecalll back--------------->", error);
+  };
   return (
     <Grid
       container
@@ -45,7 +283,7 @@ const Cart = () => {
       justifyContent="center"
       alignItems="flex-start"
     >
-      {cartCount === 0 && (
+      {cartData === 0 && (
         <Grid
           className={classes.boxStyle}
           style={{ margin: "auto" }}
@@ -74,119 +312,274 @@ const Cart = () => {
             <Typography>
               Looks like you haven’t added anything to your cart yet !
             </Typography>
-            <Button variant="contained" className={classes.btncontainedPrimary}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                navigate("/home");
+              }}
+              className={classes.btncontainedPrimary}
+            >
               Browse Products
             </Button>
           </Grid>
         </Grid>
       )}
 
-      {cartCount !== 0 && (
+      {cartData !== 0 && (
         <Grid item xs={12} sm={12} md={12} lg={11} xl={11}>
           <Grid container>
             <Grid item xs={12} sm={12} md={8} lg={8} xl={7} sx={{ px: 1 }}>
               <Grid container className={classes.boxStyle}>
-                {cartProducts.map((item) => {
-                  return (
-                    <Grid
-                      container
-                      alignItems="flex-start"
-                      className={classes.cartProductBox}
+                {cartData &&
+                  cartData.cart_items.map((item, i) => {
+                    return (
+                      <Grid
+                        container
+                        alignItems="flex-start"
+                        className={classes.cartProductBox}
+                      >
+                        <Grid
+                          item
+                          xs={5}
+                          sm={5}
+                          md={3}
+                          sx={{ borderRadius: 1, p: 2 }}
+                          className={classes.imgProduct}
+                        >
+                          <Box
+                            component="img"
+                            src={item.item_images}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                            }}
+                          />
+                        </Grid>
+                        <Grid item xs={5} sm={5} md={5} sx={{ pl: 3 }}>
+                          <Typography
+                            variant="h4"
+                            className={classes.fontSize16}
+                          >
+                            {item.item_name}
+                          </Typography>
+                          <Box sx={{ pt: 3 }}>
+                            <Typography color="gray">Price</Typography>
+                            <Typography>
+                              ₹ {item.item_price * item.cart_quantity}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                          md={4}
+                          className={classes.moveToWishListBox}
+                          container
+                          flexWrap="nowrap"
+                          alignItems="center"
+                          justifyContent="flex-end"
+                        >
+                          <Typography sx={{ fontSize: 15 }} color="gray">
+                            Remove from cart
+                          </Typography>
+                          <Divider
+                            orientation="vertical"
+                            variant="middle"
+                            flexItem
+                            sx={{ mx: 2 }}
+                          />
+                          <Button
+                            startIcon={<DeleteOutlineIcon />}
+                            className={classes.removeBtn}
+                            onClick={() => {
+                              deleteCartItem(item.cart_item_id);
+                              // console.log(item);
+                            }}
+                          ></Button>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={7}
+                          container
+                          flexWrap="nowrap"
+                          alignItems="center"
+                          justifyContent="flex-end"
+                          className={classes.productBtnIncDec}
+                        >
+                          {/* <Button
+                            disabled={item.itemCount <= 1}
+                            // disabled={true}
+                            variant="contained"
+                            onClick={() => {
+                              dispatch(decrement(item));
+                            }}
+                          >
+                          </Button> */}
+                          <Button
+                            onClick={() =>
+                              item.cart_quantity > 1
+                                ? reduceCarQuantity(item.cart_item_id)
+                                : {}
+                            }
+                          >
+                            <RemoveOutlined
+                              sx={{
+                                mr: 3,
+                                color: "orange",
+                              }}
+                            />
+                          </Button>
+
+                          <Button
+                            // variant="contained"
+                            sx={{
+                              color: "teal",
+                              backgroundColor: "orange",
+                            }}
+                            // onClick={() => {
+                            //   handleAddCart(item.cart_item_id);
+                            // }}
+                          >
+                            {item.cart_quantity}
+                          </Button>
+                          <Button
+                            onClick={() =>
+                              increaseCarQuantity(item.cart_item_id)
+                            }
+                          >
+                            <AddOutlined
+                              sx={{
+                                ml: 3,
+                                color: "orange",
+                              }}
+                            />
+                          </Button>
+
+                          {console.log(
+                            total.push(item.cart_quantity * item.item_price)
+                          )}
+                        </Grid>
+                      </Grid>
+                    );
+                  })}
+                {/* <Box style={{ marginLeft: "50%" }}>
+                  <Button variant="contained">Checkout</Button>
+                  <Button variant="outlined" style={{ marginLeft: "10px" }}>
+                    Total Amount = {'₹'}{totalAmount}
+                  </Button>
+                </Box> */}
+                {/* <Payment value={amount.toString()} /> */}
+              </Grid>
+            </Grid>
+            {/*   order summary ui else chages you can dis card accordingly of merge connflicts in this push */}
+            <Grid item xs={12} sm={12} md={5} lg={4} xl={5} sx={{ px: 1 }}>
+              <Grid container className={classes.boxStyle}>
+                <Grid item xs={12}>
+                  <Typography variant="h6">Order Summary</Typography>
+                </Grid>
+                <Grid item container sx={{ py: 2 }}>
+                  <Grid item xs={6} md={6}>
+                    <Typography sx={{ fontSize: 18 }} color="GrayText">
+                      Product
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
+                    <Typography
+                      sx={{ fontSize: 18 }}
+                      align="center"
+                      color="GrayText"
                     >
-                      <Grid
-                        item
-                        xs={5}
-                        sm={5}
-                        md={3}
-                        sx={{ borderRadius: 1, p: 2 }}
-                        className={classes.imgProduct}
-                      >
-                        <Box
-                          component="img"
-                          src={item.img}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                          }}
-                        />
+                      Quantity
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
+                    <Typography
+                      sx={{ fontSize: 18 }}
+                      align="end"
+                      color="GrayText"
+                    >
+                      Amount
+                    </Typography>
+                  </Grid>
+                </Grid>
+                {productSummary.map((product) => {
+                  return (
+                    <Grid item container key={product.id}>
+                      <Grid item xs={6} sx={{ pb: 1 }}>
+                        <Typography>{product.description}</Typography>
                       </Grid>
-                      <Grid item xs={5} sm={5} md={5} sx={{ pl: 3 }}>
-                        <Typography variant="h4" className={classes.fontSize16}>
-                          {item.name}
+                      <Grid item xs={3} sx={{ pb: 1 }}>
+                        <Typography align="center">
+                          x{product.quantity}
                         </Typography>
-                        <Box sx={{ pt: 3 }}>
-                          <Typography color="gray">Price</Typography>
-                          <Typography>₹ {item.price}</Typography>
-                        </Box>
                       </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                        md={4}
-                        className={classes.moveToWishListBox}
-                        container
-                        flexWrap="nowrap"
-                        alignItems="center"
-                        justifyContent="flex-end"
-                      >
-                        <Typography sx={{ fontSize: 20 }} color="gray">
-                          move to wishlist
+                      <Grid item xs={3} sx={{ pb: 1 }}>
+                        <Typography align="end">
+                          INR {product.amount}
                         </Typography>
-                        <Divider
-                          orientation="vertical"
-                          variant="middle"
-                          flexItem
-                          sx={{ mx: 2 }}
-                        />
-                        <Button
-                          startIcon={<DeleteOutlineIcon />}
-                          className={classes.removeBtn}
-                          onClick={() => {
-                            dispatch(removeCartProduct(item));
-                            console.log(item);
-                          }}
-                        ></Button>
-                      </Grid>
-                      <Grid
-                        item
-                        xs={7}
-                        container
-                        flexWrap="nowrap"
-                        alignItems="center"
-                        justifyContent="flex-end"
-                        className={classes.productBtnIncDec}
-                      >
-                        <Button
-                          disabled={item.itemCount <= 1}
-                          // disabled={true}
-                          variant="contained"
-                          onClick={() => {
-                            dispatch(decrement(item));
-                          }}
-                        >
-                          -
-                        </Button>
-                        <Typography style={{ margin: "10px" }}>
-                          {item.itemCount}
-                        </Typography>
-                        <Button
-                          variant="contained"
-                          onClick={() => {
-                            console.log("items", item);
-                            dispatch(increment(item));
-                          }}
-                        >
-                          +
-                        </Button>
                       </Grid>
                     </Grid>
                   );
                 })}
+
+                <Grid
+                  item
+                  xs={12}
+                  container
+                  sx={{
+                    borderTop: "1px solid #e6e6e6",
+                    borderBottom: "1px solid #e6e6e6 ",
+                    py: 1,
+                    my: 1,
+                  }}
+                >
+                  <Grid item xs={9}>
+                    <Typography>Sub Total(Inclusive Taxes)</Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography align="end">INR 3.00</Typography>
+                  </Grid>
+                </Grid>
+
+                <Grid
+                  item
+                  xs={12}
+                  container
+                  sx={{
+                    borderBottom: "1px solid #e6e6e6 ",
+                    py: 3,
+                  }}
+                >
+                  <Grid item xs={9}>
+                    <Typography>Delivery Charges</Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography align="end">+ INR 3.00</Typography>
+                  </Grid>
+                </Grid>
+
+                <Grid item xs={12} container sx={{ py: 3 }}>
+                  <Grid item xs={9}>
+                    <Typography variant="h6">Total Amount</Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography align="end" variant="h6">
+                      +INR 300.00
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid container sx={{ my: 2 }}>
+                <Button
+                  onClick={() => navigate("/home/check-out")}
+                  fullWidth
+                  className={classes.btncontainedPrimary}
+                >
+                  Proceed
+                </Button>
               </Grid>
             </Grid>
-            <Grid item xs={12} sm={12} md={4} lg={4} xl={5} sx={{ px: 1 }}>
-              <Grid container className={classes.boxStyle}></Grid>
-            </Grid>
+            {/*  order summary ui else chages you can dis card accordingly  */}
           </Grid>
         </Grid>
       )}
@@ -213,13 +606,14 @@ const useStyles = makeStyles((theme) => ({
   btncontainedPrimary: {
     fontSize: "16px",
     color: "#fff",
-    background: "#66B2FF",
-    borderRadius: "25px",
+    background: theme.palette.primary.main,
+    textTransform: "none",
+    borderRadius: "8px",
     boxShadow: "none",
     letterSpacing: "1px",
     "&:hover": {
       boxShadow: "none",
-      background: "#66B2FF",
+      background: theme.palette.primary.main,
     },
   },
   cartProductBox: {
@@ -265,4 +659,26 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-export default Cart;
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getCartItems: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        cartActions.getCartItems(data, successCallBack, failureCallBack)
+      ),
+    reduceCartItem: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        cartActions.reduceCartItem(data, successCallBack, failureCallBack)
+      ),
+    increaseCartItem: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        cartActions.increaseCartItem(data, successCallBack, failureCallBack)
+      ),
+    removeCartItem: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        cartActions.removeCartItem(data, successCallBack, failureCallBack)
+      ),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(Cart);

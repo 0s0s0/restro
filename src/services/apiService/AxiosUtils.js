@@ -12,6 +12,7 @@ import { getAxiosInstance, getAxiosInstanceMultipart } from "./AxiosWrapper";
 // const BASE_URL_ADDRESSESS = "https://bc3d-182-68-162-91.in.ngrok.io/";
 
 //----------------------------------------------------------------------------------
+const BASE_URL = "https://gentle-dusk-70757.herokuapp.com/";
 
 const BASE_URL_SIGNUP = "https://gentle-dusk-70757.herokuapp.com/";
 
@@ -270,6 +271,78 @@ export async function performDeleteRequest(endPoint, jsonRequest) {
 export async function performPostRequestWishList(endPoint, jsonRequest) {
   let wrapper = await getAxiosInstanceMultipart();
   let API_URL = BASE_URL_FORGOT + endPoint;
+  // console.log("@@@ Options ===========", wrapper);
+  console.log("@@@ JSON BODY ===========", jsonRequest);
+  console.log("@@@ URL ==============", endPoint);
+
+  return wrapper
+    .post(API_URL, jsonRequest)
+    .then((res) => {
+      console.log("@@@ RESPONSE ==============", res);
+      return res;
+    })
+    .catch((ex) => {
+      throw ex;
+    });
+}
+
+export async function performPostRequestAddToWhishlist(endPoint, jsonRequest) {
+  let wrapper = await getAxiosInstanceMultipart();
+  let API_URL = BASE_URL + endPoint;
+  // console.log("@@@ Options ===========", wrapper);
+  console.log("@@@ JSON BODY ===========", jsonRequest);
+  console.log("@@@ URL ==============", endPoint);
+
+  return wrapper
+    .post(API_URL, jsonRequest)
+    .then((res) => {
+      console.log("@@@ RESPONSE ==============", res);
+      return res;
+    })
+    .catch((ex) => {
+      throw ex;
+    });
+}
+
+export async function performGetRequestWishlist(endPoint) {
+
+  let wrapper = await getAxiosInstance();
+  let API_URL = BASE_URL + endPoint;
+  // console.log("@@@ Options ===========", wrapper);
+  console.log("@@@ URL ==============", API_URL);
+
+  // return wrapper
+  //   .get(API_URL)
+  //   .then((res) => {
+  //     console.log("@@@ RESPONSE ==============", res);
+  //     return res;
+  //   })
+  //   .catch((ex) => {
+  //     console.log("errrrrrrrrrrrrrrror", ex);
+  //     throw ex;
+  //   });
+
+  return fetch(API_URL, {
+    method: "GET",
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    },
+})
+    .then(res => res.json())
+    .then((data) => {
+        console.log('Wishlist JSON data====================== >>>>>>>>>>>>>>>>>>>>>>>> ', data)
+        return data;
+    })
+    .catch((e) => {
+        console.log('JSON error======================', e)
+        throw e;
+    });
+}
+
+export async function performPostRequestRemoveFromWhishlist(endPoint, jsonRequest) {
+  let wrapper = await getAxiosInstanceMultipart();
+  let API_URL = BASE_URL + endPoint;
   // console.log("@@@ Options ===========", wrapper);
   console.log("@@@ JSON BODY ===========", jsonRequest);
   console.log("@@@ URL ==============", endPoint);

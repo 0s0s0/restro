@@ -19,23 +19,24 @@ import { NavLink } from "react-router-dom";
 
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import AlertDialog from "../../components/Dialogue/AlertDialog";
 
 import { makeStyles } from "@mui/styles";
 // import useCustomDispatch from "../../hooks/useDispatch";
+import { connect } from "react-redux";
+import * as cartActions from "../../redux/actions/cartActions";
 
-const Navbar = () => {
+const Navbar = ({ getCartItems }) => {
   const classes = useStyles();
   const cartCount = useSelector((state) => state.cartReducer.cartCount);
   const whishListCount = useSelector(
     (state) => state.cartReducer.whishListCount
   );
-  // const userDetails = useSelector(
-  //   (state) => state.userReducer.userProfileData.data
-  // );
-
+  const userDetails = useSelector(
+    (state) => state.userReducer?.userProfileData?.data.data
+  );
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
   // const matches = useMediaQuery(theme.breakpoints.down("md"));
@@ -50,27 +51,71 @@ const Navbar = () => {
 
   // const [isFavourite, setIsFavourite] = useState(false);
   const [searchItem, setSearchItem] = useState("");
+
   const [openMenu, setOpenMenu] = useState(false);
   const [open, setOpen] = useState(false);
+  const [itemsInCart, setItemsIncart] = useState(0);
+  const cartValues = useSelector((state) => state.cartReducer.getCartitems);
+  cartValues && console.log("--------------->", cartValues?.cart_items?.length);
   // const [drawerPosition, setDrawerPosition] = {({
   //   top :
   // })
+  useEffect(() => {
+    GetCartItems();
+  }, [cartValues?.cart_items?.length]);
+  const GetCartItems = async () => {
+    let user_id = await JSON.parse(localStorage.getItem("userId"));
+    console.log("user_id ", user_id);
+    let data = {
+      id: user_id,
+    };
+
+    getCartItems(
+      data,
+      (res) => getCartItemsSuccessCallback(res),
+      (err) => getCartItemsFailureCallBack(err)
+    );
+  };
+
+  const getCartItemsSuccessCallback = (res) => {
+    console.log("Get cart items Successcall Back @@@@@@@@@@@ ----->", res);
+    try {
+      if (res.success == true) {
+        console.log(
+          "&&&&&&&&&&&&&&&& Cat items @@@@@@@@@@@ ----->",
+          res.cart_items.length
+        );
+        // setItemsIncart(cartValues && cartValues.length);
+        // setCartList(res);
+      } else {
+        // let message = res.message;
+        // WToast.show({ data: 'Something went wrong' });
+      }
+    } catch (err) {
+      //   Sentry.captureException(err);
+      console.log("Error", err);
+    }
+  };
+
+  const getCartItemsFailureCallBack = (error) => {
+    console.log("get cart items failurecalll back--------------->", error);
+  };
   return (
     <>
       <Grid container alignItems="center" className={classes.navbar}>
         <Grid item xs={4}>
-          <Grid container flexWrap="nowrap">
-            <NavLink to="/home">
-              <Box
-                component="img"
-                src={logo}
-                alt="logo"
-                style={{
-                  width: "12.5rem",
-                  height: "2.5rem",
-                }}
-              />
-            </NavLink>
+          <Grid container flexWrap="nowrap" alignItems="center">
+            {/* <NavLink to="/home"> */}
+            <Box
+              component="img"
+              src={logo}
+              alt="logo"
+              style={{
+                width: "12.5rem",
+                height: "2.5rem",
+              }}
+            />
+            {/* </NavLink> */}
             {!matches && (
               <Grid
                 item
@@ -85,18 +130,16 @@ const Navbar = () => {
               >
                 <NavLink
                   className={classes.nav}
-                  style={({ isActive }) =>
-                    isActive ? { color: "blue" } : undefined
-                  }
-                  to="shops"
+                  // style={({ isActive }) =>
+                  //   isActive ? { color: "blue" } : undefined
+                  // }
+                  to="/home"
+                  end
                 >
-                  <Typography sx={{ ml: 1.5 }}>Shops</Typography>
-                </NavLink>
-                <NavLink className={classes.nav} to="new-arrivals">
-                  <Typography sx={{ ml: 1.5 }}>New Arivals</Typography>
+                  <Typography sx={{ ml: 1.5 }}>Home</Typography>
                 </NavLink>
                 {/* <NavLink className={classes.nav} to="new-arrivals">
-                  <Typography sx={{ ml: 1.5 }}>Another</Typography>
+                  <Typography sx={{ ml: 1.5 }}>New Arivals</Typography>
                 </NavLink> */}
               </Grid>
             )}
@@ -181,7 +224,7 @@ const Navbar = () => {
                 <NavLink to="cart">
                   <Badge
                     className={classes.badgeStyle}
-                    badgeContent={cartCount}
+                    badgeContent={cartValues?.cart_items?.length}
                   >
                     <Box
                       component="img"
@@ -199,15 +242,7 @@ const Navbar = () => {
                 >
                   {/* <TypographyTextNormal>Login/Logout</TypographyTextNormal> */}
                   <Avatar className={classes.avatar}>
-                    {/* {() => {
-                // let name = userDetails.full_name.split(" ")
-                let myName = "Owais Khan";
-                let firstTwo = myName.split(" ");
-                firstTwo = firstTwo[0].charAt(0) + firstTwo[1].charAt(0);
-                return firstTwo;
-              }} */}
-                    MO
-                    {/* {userDetails?.full_name} */}
+                    {userDetails?.full_name.charAt(0).toUpperCase()}
                   </Avatar>
                 </NavLink>
               </Grid>
@@ -247,7 +282,10 @@ const Navbar = () => {
               </Typography>
             </NavLink>
             <NavLink to="/home/cart" className={classes.nav}>
-              <Badge className={classes.badgeStyle} badgeContent={cartCount}>
+              <Badge
+                className={classes.badgeStyle}
+                badgeContent={cartValues?.cart_items?.length}
+              >
                 <Typography className={classes.menuItemsStyle}>Cart</Typography>
               </Badge>
             </NavLink>
@@ -357,4 +395,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default Navbar;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getCartItems: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        cartActions.getCartItems(data, successCallBack, failureCallBack)
+      ),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(Navbar);

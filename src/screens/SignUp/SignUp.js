@@ -513,14 +513,14 @@ const useStyles = makeStyles((theme) => ({
   btncontainedPrimary: {
     fontSize: "16px",
     color: "#fff",
-    background: "#66B2FF",
+    background: theme.palette.primary.main,
     borderRadius: "25px",
     boxShadow: "none",
     letterSpacing: "1px",
     textTransform: "none",
     "&:hover": {
       boxShadow: "none",
-      background: "#66B2FF",
+      background: theme.palette.primary.main,
     },
   },
   btnOutlinedPrimary: {
@@ -528,7 +528,8 @@ const useStyles = makeStyles((theme) => ({
     color: "#000",
     // background: "#fff",
     background: "	#f8f8ff",
-    border: "1px solid #66B2FF ",
+
+    border: `1px solid ${theme.palette.primary.main}`,
     borderRadius: "25px",
     boxShadow: "none",
     letterSpacing: "1px",

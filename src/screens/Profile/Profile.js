@@ -9,6 +9,7 @@ import HelpCenter from "../../assets/helpcenter.png";
 import LogOut from "../../assets/logout.png";
 import User from "../../assets/user.png";
 
+import * as CONST from "../../utils/Constants";
 import { Outlet } from "react-router-dom";
 import AlertDialog from "../../components/Dialogue/AlertDialog";
 
@@ -35,11 +36,17 @@ const Profile = () => {
 
   let activeStyle = {
     backgroundColor: "#f8f8ff",
-    borderBottom: "2px solid #66B2FF",
+    // borderBottom: "2px solid #66B2FF",
+    borderBottom: `2px solid ${CONST.primaryColor}`,
   };
 
   return (
-    <Grid container className={classes.mainDivMiddle} justifyContent="center">
+    <Grid
+      container
+      className={classes.mainDivMiddle}
+      justifyContent="center"
+      alignContent="flex-start"
+    >
       <Grid item xs={9} style={{ paddingTop: "16px" }} container>
         <NavLink className={classes.nav} to="/home">
           <Typography>Home</Typography>
