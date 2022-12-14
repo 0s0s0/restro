@@ -35,10 +35,10 @@ const HelpCenter = () => {
       link: "Terms & Conditions",
       path: "/home/help-center/terms-condition",
     },
-    {
-      link: "Content Policy",
-      path: "/home/help-center/others",
-    },
+    // {
+    //   link: "Content Policy",
+    //   path: "/home/help-center/others",
+    // },
   ];
 
   const handleProfileIconClick = (event) => {
@@ -141,7 +141,7 @@ const HelpCenter = () => {
 
               <Divider />
 
-              <NavLink
+              {/* <NavLink
                 style={({ isActive }) => (isActive ? activeStyle : undefined)}
                 className={classes.nav}
                 to="others"
@@ -151,7 +151,7 @@ const HelpCenter = () => {
                 </Grid>
               </NavLink>
 
-              <Divider />
+              <Divider /> */}
             </Grid>
           </Grid>
         )}

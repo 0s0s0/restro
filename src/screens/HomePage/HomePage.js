@@ -23,9 +23,11 @@ const HomePage = ({}) => {
   const [foodData, setFoodData] = useState([]);
 
   const foodList = async () => {
+    console.log("Food List....");
+    const userId = JSON.parse(localStorage.getItem("userId"));
     try {
       const data = await axios.get(
-        `https://gentle-dusk-70757.herokuapp.com/api/v1/items?direction=asc&search=&user_id=${user_id}`,
+        `https://gentle-dusk-70757.herokuapp.com/api/v1/items?direction=asc&search=&user_id=${userId}`,
         {
           headers: {
             Accept: "application/json",

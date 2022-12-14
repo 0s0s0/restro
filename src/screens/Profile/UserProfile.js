@@ -354,26 +354,28 @@ const UserProfile = () => {
           <label htmlFor="file-input">
             <Box
               component="img"
-              src={selectedImage || User}
+              // src={selectedImage || User}
+              src={User}
               // src={selectedImage == null ? User : selectedImage}
               sx={{ borderRadius: 1, p: 2, border: "1px solid #e6e6e6 " }}
               style={{
                 width: 100,
                 height: 100,
-                cursor: "pointer",
+                // cursor: "pointer",
               }}
             />
           </label>
-          <input
+          {/* <input
             id="file-input"
             type="file"
             style={{ display: "none" }}
             onChange={(event) => {
               let img = event.target.files[0];
               console.log("files", img);
-              setSelectedImage(URL.createObjectURL(img));
+              // setSelectedImage(URL.createObjectURL(img));
+              setSelectedImage(img);
             }}
-          />
+          /> */}
           {selectedImage !== avatar && (
             <>
               <Button
@@ -381,7 +383,7 @@ const UserProfile = () => {
                   console.log("selected img....", selectedImage);
                   dispatch({
                     type: "UPDATE_IMAGE",
-                    imgSrc: selectedImage,
+                    imgSrc: selectedImage.name,
                     name: name,
                   });
                 }}

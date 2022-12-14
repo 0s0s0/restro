@@ -10,7 +10,7 @@ import LogOut from "../../assets/logout.png";
 import User from "../../assets/user.png";
 
 import * as CONST from "../../utils/Constants";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import AlertDialog from "../../components/Dialogue/AlertDialog";
 
 import { NavLink } from "react-router-dom";
@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import LogoutButton from "../Login/LogoutButton";
 
 const Profile = () => {
   const classes = useStyles();
@@ -30,9 +31,17 @@ const Profile = () => {
     (state) => state.userReducer.userProfileData.data.avatar
   );
 
+  const orderData = useSelector((state) => state.cartReducer.orderList);
+  const favoriteData = useSelector(
+    (state) => state.cartReducer.favoriteProducts
+  );
+  console.log("favoriteData......", favoriteData);
+
   const matches = useMediaQuery(theme.breakpoints.up("md"));
 
   const [open, setOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   let activeStyle = {
     backgroundColor: "#f8f8ff",
@@ -75,7 +84,8 @@ const Profile = () => {
                   >
                     <Box
                       component="img"
-                      src={avatar || User}
+                      // src={avatar || User}
+                      src={User}
                       style={{ width: 100, height: 100, borderRadius: "50%" }}
                     />
                     <Grid item>
@@ -111,7 +121,10 @@ const Profile = () => {
 
                       // style={{ padding: "24px 0px" }}
                     >
-                      <Badge className={classes.badgeStyle} badgeContent={9}>
+                      <Badge
+                        className={classes.badgeStyle}
+                        badgeContent={favoriteData?.length}
+                      >
                         <Box component="img" src={WishList} />
                       </Badge>
                       <Typography>Favourites</Typography>
@@ -128,7 +141,10 @@ const Profile = () => {
                     to="my-order"
                   >
                     <Grid className={classes.profileItemsbox} container>
-                      <Badge className={classes.badgeStyle} badgeContent={3}>
+                      <Badge
+                        className={classes.badgeStyle}
+                        badgeContent={orderData?.length}
+                      >
                         <Box component="img" src={OrderFood} />
                       </Badge>
                       <Typography>My Orders</Typography>
@@ -145,9 +161,9 @@ const Profile = () => {
                     to="addressess"
                   >
                     <Grid className={classes.profileItemsbox} container>
-                      <Badge className={classes.badgeStyle} badgeContent={3}>
-                        <Box component="img" src={Address} />
-                      </Badge>
+                      {/* <Badge className={classes.badgeStyle} badgeContent={3}> */}
+                      <Box component="img" src={Address} />
+                      {/* </Badge> */}
                       <Typography>Saved Adressess</Typography>
                     </Grid>
                   </NavLink>
@@ -162,9 +178,9 @@ const Profile = () => {
                     to="notification"
                   >
                     <Grid className={classes.profileItemsbox} container>
-                      <Badge className={classes.badgeStyle} badgeContent={3}>
-                        <Box component="img" src={Notifications} />
-                      </Badge>
+                      {/* <Badge className={classes.badgeStyle} badgeContent={3}> */}
+                      <Box component="img" src={Notifications} />
+                      {/* </Badge> */}
 
                       <Typography>Notifications</Typography>
                     </Grid>
@@ -195,15 +211,20 @@ const Profile = () => {
                       Log Out
                     </Typography>
                   </Grid>
+                  {/* <LogoutButton /> */}
                   {open && (
                     <AlertDialog
                       dialogState={open}
                       // dialogFun={myFun}
-                      dialogFun={() => setOpen(false)}
+                      dialogCloseFun={() => setOpen(false)}
                       title="Log out"
                       description=" Are you sure you want to logout from Pro Restaurant ?"
-                      actionCancel="Cancel"
-                      actionLogOut="LogOut"
+                      buttonTextCancel="Cancel"
+                      buttonTextConfirmAction="LogOut"
+                      confirmHandler={() => {
+                        localStorage.removeItem("userId");
+                        navigate("/");
+                      }}
                     />
                   )}
 

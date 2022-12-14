@@ -20,8 +20,10 @@ import {
   DeleteForeverOutlined,
   RemoveOutlined,
 } from "@mui/icons-material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { connect, useSelector } from "react-redux";
 import * as cartActions from "../../redux/actions/cartActions";
+import * as wishlistAction from "../../redux/actions/wishlistAction";
 import { useDispatch } from "react-redux";
 
 function SingleProduct({
@@ -30,11 +32,15 @@ function SingleProduct({
   getCartItems,
   increaseCartItem,
   reduceCartItem,
+  addToWishlist,
+  removeFromWishlist,
+  getWishlist
 }) {
   const { state } = useLocation();
   const data = state.data;
   const added = state.added;
   const cart_id = state.cart_id;
+
   const classes = useStyles();
   const [value, setValue] = useState({ quantity: 0, cart_id: 0 });
   const [incart, setIncart] = useState();
@@ -224,7 +230,7 @@ function SingleProduct({
     );
   };
   const increaseCartItemSuccessCallback = (res) => {
-    console.log("increase cart item Successcall Back @@@@@@@@@@@ ----->", res);
+    
     try {
       if (res.success == true) {
         setUpdateTotal(!updateTotal);
@@ -267,8 +273,7 @@ function SingleProduct({
     cartValues &&
       cartValues.map((item) => {
         if (item.cart_item_id === cart_id) {
-          // console.log("counts--------------------------->", item?.cart_item_id);
-          // console.log(added);
+          
           return setValue({
             quantity: item.cart_quantity,
             cart_id: item.cart_item_id,
@@ -278,6 +283,62 @@ function SingleProduct({
         }
       });
   }, [setValue, cartValues.length]);
+
+  const handleFav = async(item_id) => {
+    if (state.data.added_in_wishlist) {
+      let data = {
+        item_id: item_id,
+        favourite_id: state.favourite_id,
+        // user_id: userID,
+      };
+      removeFromWishlist(
+        data,
+        (res) => addToWishlistSuccessCallback(res),
+        (err) => addToWishListFailureCallback(err)
+      );
+    } else {
+      // onAddToWishlist(id);
+      let userID = await localStorage.getItem("userId");
+      let data = {
+        item_id: item_id,
+        user_id: userID,
+      };
+
+      addToWishlist(
+        data,
+        (res) => addToWishlistSuccessCallback(res),
+        (err) => addToWishListFailureCallback(err)
+      );
+    }
+  }
+
+  const addToWishlistSuccessCallback = (res) => {
+    
+    if(res.status == 200 || res.success) {
+      data.added_in_wishlist = !data.added_in_wishlist;
+
+      setUpdateTotal(!updateTotal);
+      getWishlistData()
+    }
+  }
+
+  const addToWishListFailureCallback = (err) => {
+
+  }
+
+  const getWishlistData = async() => {
+    let userID = await localStorage.getItem("userId");
+    let data = {
+      user_id: userID,
+      // favourite_id: 1
+    };
+
+      getWishlist(
+        data,
+        (res) => {},
+        (err) => {}
+      );
+  }
 
   return (
     <Grid
@@ -298,12 +359,19 @@ function SingleProduct({
               </Box>
             </Grid>
             <Grid item md={7} sx={{ px: 5, py: 3 }}>
-              <Box style={{ display: "flex" }}>
-                <Typography variant="h5">{data.item.name} </Typography>
-                <FavoriteBorderIcon sx={{ ml: 2, mt: 0.5, color: "red" }} />
+              <Box style={{ display: "flex", flexDirection: 'row' }}>
+                <Typography variant="h5" sx={{ mt: 1 }}>{data.item.name} </Typography>
+                <IconButton
+                  onClick={() => handleFav(data.item.id)}
+                  aria-label="add to favorites"
+                  style={{ alignItems: 'center' }}
+                  sx={{ ml: 2, mt: 0.5 }}
+                >
+                  {data.added_in_wishlist ? <FavoriteIcon sx={{ color: "red" }} /> : <FavoriteBorderIcon sx={{ color: "red" }} />}
+                </IconButton>
               </Box>
 
-              <Box sx={{ mt: 2 }}>
+              {/* <Box sx={{ mt: 2 }}>
                 <Rating
                   name="simple-controlled"
                   // value={value}
@@ -311,7 +379,7 @@ function SingleProduct({
                     setValue(newValue);
                   }}
                 />
-              </Box>
+              </Box> */}
 
               <Box sx={{ mt: 2 }}>
                 <Typography variant="h6">{data.item.price}</Typography>
@@ -363,7 +431,7 @@ function SingleProduct({
                             color: "#fff",
                           },
                         }}
-                        // disabled
+                      // disabled
                       >
                         {value.quantity}
                       </Button>
@@ -438,6 +506,26 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(
         cartActions.increaseCartItem(data, successCallBack, failureCallBack)
       ),
+    addToWishlist: (data, addToWishlistSuccessCallback, addToWishListFailureCallback) =>
+      dispatch(
+        wishlistAction.addToWishList(
+          data,
+          addToWishlistSuccessCallback,
+          addToWishListFailureCallback
+        )
+      ),
+    removeFromWishlist: (data, removeFromWishlistSuccessCallback, removeFromWishlistFailureCallback) =>
+      dispatch(
+        wishlistAction.removeFromWishList(
+          data,
+          removeFromWishlistSuccessCallback,
+          removeFromWishlistFailureCallback
+        )
+      ),
+      getWishlist: (data, successCallBack, failureCallBack) =>
+        dispatch(
+          wishlistAction.getWishlist(data, successCallBack, failureCallBack)
+        ),
   };
 };
 export default connect(null, mapDispatchToProps)(SingleProduct);

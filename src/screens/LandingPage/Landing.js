@@ -44,6 +44,7 @@ const Landing = ({ ...props }) => {
       );
       // console.log(data);
       setFoodData(data.data.data);
+      GetWishList();
       // console.log("====================================");
       // foodData.data && console.log(foodData.data);
 

@@ -105,3 +105,25 @@ export const removeCartItem = (data, successCallBack, failureCallBack) => {
     }
   }
 }
+
+export const placeOrder = (data, successCallBack, failureCallBack) => {
+  return {
+    type: USER_CONST.PLACE_ORDER,
+    payload: {
+      successCallBack,
+      failureCallBack,
+      data
+    }
+  }
+}
+
+export const myOrderList = (data, successCallBack, failureCallBack) => {
+  return {
+    type: USER_CONST.ORDER_LIST,
+    payload: {
+      successCallBack,
+      failureCallBack,
+      data
+    }
+  }
+}

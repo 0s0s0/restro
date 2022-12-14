@@ -128,4 +128,47 @@ export default class Api {
                 throw e;
             });
     }
+
+    static createOrder(action) {
+        console.log("Action ==>", action)
+        const create_order_url = url.BASE_URL + `api/v1/payments/create_order`;
+        return fetch(create_order_url, {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(action)
+        })
+            .then(res => res.json())
+            .then((data) => {
+                return data;
+            })
+            .catch((e) => {
+                throw e;
+            });
+    }
+
+    static orderList(action) {
+        const order_list_url = url.BASE_URL + `/api/v1/payments/?user_id=${action.user_id}`;
+        return fetch(order_list_url, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(res => res.json())
+            .then((data) => {
+                console.log('orderList====================== >>>>>>>>>>>>>>>>>>>>>>>> ', data)
+                return data;
+            })
+            .catch((e) => {
+                console.log('JSON error======================', e)
+                throw e;
+            });
+    }
+
 }
+
+

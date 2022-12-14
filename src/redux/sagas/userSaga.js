@@ -210,3 +210,25 @@ export const usertermsAndConditions = function* termsAndConditionSaga(action) {
 };
 
 //-----------------------------------------------------------------------------------
+
+export const googleLogin = function* googleLoginSaga(action) {
+  console.log("googleLogin", action);
+  yield put({ type: "LOADER" });
+
+  let tokenId = action.token.tokenId;
+  let test = action.token.profileObj.name;
+
+  let path = `api/v1/social_media_users/google_auth2?token_id=${tokenId}&name=${test}`;
+  try {
+    const res = yield call(performGetRequestTerms, path);
+    console.log("respone of googleLogin......", res);
+    if (res !== undefined && res.status === 200) {
+      localStorage.setItem("userId", res?.data?.data?.id);
+      action.navigate();
+      yield put({ type: "LOADER_CLOSE" });
+    }
+  } catch (er) {
+    console.log("@@@ TERMS AND CONDITION error ========", er);
+    yield put({ type: "LOADER_CLOSE" });
+  }
+};

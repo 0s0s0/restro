@@ -8,6 +8,7 @@ import {
   verifiedOtp,
   userChangePassword,
   usertermsAndConditions,
+  googleLogin,
 } from "./userSaga";
 
 import {
@@ -30,17 +31,24 @@ import {
 } from "./savedAddressSaga";
 import { useEffect } from "react";
 
-import {
-  addToWishlist,
-  getWishlist,
-  removeWishlist
-} from "./wishlistSaga";
+import { addToWishlist, getWishlist, removeWishlist } from "./wishlistSaga";
 
 import { addWishList } from "./products";
-import { addToCart, createCart, getCartItems, increaseCartItem, reduceCartItem, removeCartItem } from "./cartSaga";
+import {
+  addToCart,
+  createCart,
+  createOrder,
+  getCartItems,
+  increaseCartItem,
+  orderList,
+  reduceCartItem,
+  removeCartItem,
+} from "./cartSaga";
 
 const watchUser = function* watchUser() {
   yield takeEvery(CONST.USER_LOGIN_SAGA, userLogin);
+  yield takeEvery("GOOGLE_LOGIN", googleLogin);
+
   yield takeEvery(CONST.USER_SIGNUP_SAGA, userSignUp);
   yield takeEvery(CONST.USER_FORGOT_SAGA, userForgot);
   yield takeEvery(CONST.VERIFY_OTP_SAGA, verifiedOtp);
@@ -72,6 +80,9 @@ const watchUser = function* watchUser() {
   yield takeEvery(CONST.INCREASE_CART_QUANTITY_REQUESTED, increaseCartItem);
   yield takeEvery(CONST.REDUCE_CART_QUANTITY_REQUESTED, reduceCartItem);
   yield takeEvery(CONST.REMOVE_FROM_CART_REQUESTED, removeCartItem);
+
+  yield takeEvery(CONST.PLACE_ORDER, createOrder);
+  yield takeEvery(CONST.ORDER_LIST, orderList);
 
   yield takeEvery(CONST.ADD_TO_FAVORITE, addToWishlist);
   yield takeEvery(CONST.GET_FAVORITE, getWishlist);

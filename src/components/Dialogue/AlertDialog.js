@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as CONST from "../../utils/Constants";
+
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -47,7 +47,6 @@ export default function AlertDialog(props) {
             {" "}
             <DialogTitle id="alert-dialog-title" sx={{ textAlign: "center" }}>
               {props.title}
-              {/* {"Log Out"} */}
             </DialogTitle>
             <Divider />
           </>
@@ -63,30 +62,30 @@ export default function AlertDialog(props) {
           <Button
             variant="outlined"
             className={classes.btnOutlinedPrimary}
-            onClick={props.dialogFun}
+            onClick={props.dialogCloseFun}
           >
-            {props.actionCancel}
+            {props.buttonTextCancel}
           </Button>
           <Button
             variant="contained"
             color="primary"
             className={classes.btncontainedPrimary}
-            // onClick={handleClose}
-            onClick={() => {
-              if (props.actionLogOut === "Delete") {
-                dispatch({
-                  type: CONST.DELETE_ADDRESS,
-                  itemId: props.itemId,
-                  succesCallback: props.succesCallback,
-                });
-                props.dialogFun();
-              } else {
-                localStorage.removeItem("userId");
-                navigate("/");
-              }
-            }}
+            // onClick={() => {
+            //   if (props.actionLogOut === "Delete") {
+            //     dispatch({
+            //       type: CONST.DELETE_ADDRESS,
+            //       itemId: props.itemId,
+            //       succesCallback: props.succesCallback,
+            //     });
+            //     props.dialogFun();
+            //   } else {
+            //     localStorage.removeItem("userId");
+            //     navigate("/");
+            //   }
+            // }}
+            onClick={props.confirmHandler}
           >
-            {props.actionLogOut}
+            {props.buttonTextConfirmAction}
           </Button>
         </DialogActions>
       </Dialog>

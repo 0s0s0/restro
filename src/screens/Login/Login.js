@@ -19,9 +19,27 @@ import { Field } from "../../components/StyledComponents/StyledComponents ";
 
 import * as VALIDATORS from "../../utils/Validators";
 import { makeStyles } from "@mui/styles";
+import LoginButton from "./LoginButton";
+
+import { gapi } from "gapi-script";
 
 const Login = () => {
   const classes = useStyles();
+
+  const clientId =
+    "244218418002-j5d2f1j88fc0p1nrjqriuj6k6evpclgr.apps.googleusercontent.com";
+  useEffect(() => {
+    const initClient = () => {
+      gapi.client.init({
+        clientId: clientId,
+        scope: "",
+      });
+    };
+    gapi.load("client:auth2", initClient);
+  });
+
+  // let accessToken = gapi?.auth?.getToken().access_token;
+  // console.log("access Token...", accessToken);
 
   // variable for navigation and dispatching actions
   const dispatch = useDispatch();
@@ -246,15 +264,17 @@ const Login = () => {
           </Button>
         )} */}
 
+        {/* Continue with Google Button */}
         {!forgotPage && (
-          <Button
-            variant="outlined"
-            className={classes.btnOutlinedPrimary}
-            fullWidth
-            startIcon={<GoogleIcon style={{ marginLeft: "10px" }} />}
-          >
-            {CONST.CONTINUE_GOOGLE}
-          </Button>
+          <LoginButton />
+          // <Button
+          //   variant="outlined"
+          //   className={classes.btnOutlinedPrimary}
+          //   fullWidth
+          //   startIcon={<GoogleIcon style={{ marginLeft: "10px" }} />}
+          // >
+          //   {CONST.CONTINUE_GOOGLE}
+          // </Button>
         )}
 
         {forgotPage && (

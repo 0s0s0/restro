@@ -415,7 +415,7 @@ function AddCart({
           return added;
         }
       });
-  }, [setAdded, cartValues.length]);
+  }, [setAdded, cartValues?.length]);
   // use_effects
 
   return (
@@ -451,6 +451,7 @@ function AddCart({
                   data: items,
                   added: added.quantity,
                   cart_id: added.cart_id,
+                  favourite_id: favourite_id,
                 },
               });
             }}

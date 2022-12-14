@@ -280,13 +280,21 @@ const SavedAddress = () => {
           <AlertDialog
             dialogState={openDeleteAlert}
             // dialogFun={myFun}
-            dialogFun={() => setOpenDeleteAlert(false)}
-            // title=""
+            title="Delete"
+            dialogCloseFun={() => setOpenDeleteAlert(false)}
             description="Are you sure you want to delete this address?"
-            actionCancel="Cancel"
-            actionLogOut="Delete"
-            itemId={addressDetails.id}
-            succesCallback={succesCallback}
+            buttonTextCancel="Cancel"
+            buttonTextConfirmAction="Delete"
+            // itemId={addressDetails.id}
+            // succesCallback={succesCallback}
+            confirmHandler={() => {
+              dispatch({
+                type: CONST.DELETE_ADDRESS,
+                itemId: addressDetails.id,
+                succesCallback: succesCallback,
+              });
+              setOpenDeleteAlert(false);
+            }}
           />
         )}
         {/* Add address Dialog */}

@@ -23,6 +23,7 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import AlertDialog from "../../components/Dialogue/AlertDialog";
 
+import User from "../../assets/user.png";
 import { makeStyles } from "@mui/styles";
 // import useCustomDispatch from "../../hooks/useDispatch";
 import { connect } from "react-redux";
@@ -31,14 +32,17 @@ import * as cartActions from "../../redux/actions/cartActions";
 const Navbar = ({ getCartItems }) => {
   const classes = useStyles();
   const cartCount = useSelector((state) => state.cartReducer.cartCount);
-  const whishListCount = useSelector(
-    (state) => state.cartReducer.whishListCount
-  );
+
   const userDetails = useSelector(
     (state) => state.userReducer?.userProfileData?.data.data
   );
+
+  const favoriteData = useSelector(
+    (state) => state.cartReducer.favoriteProducts
+  );
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
+
   // const matches = useMediaQuery(theme.breakpoints.down("md"));
 
   // const [data, setData] = useState([]);
@@ -65,7 +69,7 @@ const Navbar = ({ getCartItems }) => {
   }, [cartValues?.cart_items?.length]);
   const GetCartItems = async () => {
     let user_id = await JSON.parse(localStorage.getItem("userId"));
-    console.log("user_id ", user_id);
+    // console.log("user_id ", user_id);
     let data = {
       id: user_id,
     };
@@ -210,7 +214,7 @@ const Navbar = ({ getCartItems }) => {
                 <NavLink to="/home/profile/wish-list">
                   <Badge
                     className={classes.badgeStyle}
-                    badgeContent={whishListCount}
+                    badgeContent={favoriteData?.length}
                   >
                     <FavoriteBorderIcon
                       style={{
@@ -241,9 +245,14 @@ const Navbar = ({ getCartItems }) => {
                   style={{ marginLeft: "8px" }}
                 >
                   {/* <TypographyTextNormal>Login/Logout</TypographyTextNormal> */}
-                  <Avatar className={classes.avatar}>
+                  {/* <Avatar className={classes.avatar}>
                     {userDetails?.full_name.charAt(0).toUpperCase()}
-                  </Avatar>
+                  </Avatar> */}
+                  <Box
+                    component="img"
+                    src={User}
+                    sx={{ width: 40, height: 40 }}
+                  />
                 </NavLink>
               </Grid>
             )}

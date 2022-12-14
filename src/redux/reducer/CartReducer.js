@@ -1,9 +1,8 @@
-import * as type from '../../utils/Constants';
+import * as type from "../../utils/Constants";
 
 const initialState = {
   products: [],
   cartCount: 0,
-  whishListCount: 1,
   totalAmount: 0,
   cartProducts: [],
   favoriteProducts: [],
@@ -14,6 +13,8 @@ const initialState = {
   reduceCartItem: [],
   increasCartItem: [],
   removeCartItem: [],
+  placeOrder: [],
+  orderList: [],
 };
 
 export const cartReducer = (state = initialState, action) => {
@@ -126,12 +127,11 @@ export const cartReducer = (state = initialState, action) => {
       };
     }
 
-
     case type.CREATE_CART_REQUESTED:
       return {
         ...state,
         loading: true,
-      }
+      };
     case type.CREATE_CART_SUCCESS:
       return {
         ...state,
@@ -148,7 +148,7 @@ export const cartReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
-      }
+      };
     case type.ADD_TO_CART_SUCCESS:
       // console.log('items in a cart---------->', [action.addToCartResponse, ...state.getCartitems.cart_items])
       // console.log('get cart ---->', state.getCartitems.cart_items);
@@ -167,9 +167,9 @@ export const cartReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
-      }
+      };
     case type.GET_CART_ITEMS_SUCCESS:
-      console.log('get cart items reducer ---->', action.getCartItemsResponse)
+      console.log("get cart items reducer ---->", action.getCartItemsResponse);
       return {
         ...state,
         getCartitems: action.getCartItemsResponse,
@@ -186,7 +186,7 @@ export const cartReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
-      }
+      };
     case type.REDUCE_CART_QUANTITY_SUCCESS:
       return {
         ...state,
@@ -203,7 +203,7 @@ export const cartReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
-      }
+      };
     case type.INCREASE_CART_QUANTITY_SUCCESS:
       return {
         ...state,
@@ -220,9 +220,9 @@ export const cartReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
-      }
+      };
     case type.REMOVE_FROM_CART_SUCCESS:
-      console.log('remove item count', [...state.getCartitems.cart_items])
+      console.log("remove item count", [...state.getCartitems.cart_items]);
       return {
         ...state,
         removeCartItem: action.removeCartItemResponse,
@@ -234,6 +234,50 @@ export const cartReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.message,
+      };
+    case type.PLACE_ORDER:
+      return {
+        ...state,
+        loading: true,
+      };
+    case type.PLACE_ORDER_SUCCESS:
+      return {
+        ...state,
+        placeOrder: action.placeOrder,
+      };
+    case type.PLACE_ORDER_FAILED:
+      return {
+        ...state,
+        loading: false,
+        error: action.message,
+      };
+
+    case type.ORDER_LIST:
+      return {
+        ...state,
+        orderList: action.orderList,
+      };
+    // case type.ORDER_LIST_SUCCESS:
+    //   return {
+    //     ...state,
+    //     orderList: action.placeOrder
+    //   }
+    case type.ORDER_LIST_SUCCESS:
+      return {
+        ...state,
+        orderList: action.orderList.data,
+      };
+    case type.ORDER_LIST_FAILED:
+      return {
+        ...state,
+        loading: false,
+        error: action.message,
+      };
+
+    case "ADD_FAVORITE_LIST_REDUX":
+      return {
+        ...state,
+        favoriteProducts: action.res.data,
       };
     default:
       return {

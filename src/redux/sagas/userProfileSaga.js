@@ -18,6 +18,8 @@ export const userProfile = function* userProfileSaga(action) {
 
   let path = `api/v1/user_details/${userId}`;
 
+  console.log("userid----->", userId);
+
   try {
     const res = yield call(performGetRequestProfile, path);
     console.log("userProfile response ------>", res);
@@ -257,7 +259,13 @@ export const updateUserProfile = function* updateUserProfileSaga(action) {
   formdata.append("full_name", action.payload.name);
   formdata.append("avatar", action.payload.imgSrc);
 
-  let body = formdata;
+  console.log("formdata....", formdata.get("full_name"));
+  // console.log(payload.get('foo'))
+
+  let formInputData = [formdata.get("full_name"), formdata.get("avatar")];
+  let body = formInputData;
+
+  console.log("Body..", body);
 
   try {
     const res = yield call(performPatchRequestEditProfile, path, body);
@@ -325,16 +333,23 @@ export const updateUserImage = function* updateUserImageSaga(action) {
 
   let formdata = new FormData();
   formdata.append("full_name", action.name);
-  formdata.append("avatar", action.imgSrc);
+  formdata.append("avatar", {
+    uri: action.imgSrc,
+    name: "profile_image.jpg",
+    type: "image/jpeg",
+  });
 
-  let body = formdata;
+  let formInputData = [formdata.get("full_name"), formdata.get("avatar")];
+  let body = formInputData;
+
+  console.log("body..", body);
 
   try {
     const res = yield call(performPatchRequestEditProfile, path, body);
 
     if (res !== undefined && res.status === 200) {
       yield put({ type: "USER_PROFILE_ACTION", payload: res?.data });
-      yield action.payload.close();
+      // yield action.close();
       yield put({
         type: "SHOW_TOAST",
         payload: {

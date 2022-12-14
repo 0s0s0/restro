@@ -5,38 +5,31 @@ import { Grid, Box, Typography } from "@mui/material";
 
 import NoWishlist from "../../assets/No-Wish-list.png";
 import { connect } from "react-redux";
-import * as wishlistAction from '../../redux/actions/wishlistAction';
+import * as wishlistAction from "../../redux/actions/wishlistAction";
 import AddCart from "../../components/Card/AddCart";
 import { useSelector } from "react-redux";
 
 const WishList = ({ ...props }) => {
-
   const [favoriteData, setFavoriteData] = useState([]);
-
+  
   useEffect(() => {
-    GetWishList()
-  }, [])
+    GetWishList();
+  }, []);
 
   const GetWishList = async () => {
-
     let userID = await localStorage.getItem("userId");
     let data = {
       user_id: userID,
       // favourite_id: 1
     }
-
-    console.log("GetWishList ==>", data)
     props.getWishlist(data, (res) => getWishlistSuccessCallBack(res), (err) => getWishlistFailureCallBack(err))
   }
 
   const getWishlistSuccessCallBack = (res) => {
-    console.log("Res ==>", res)
-    setFavoriteData(res.data)
+    setFavoriteData(res)
   }
 
-  const getWishlistFailureCallBack = () => {
-
-  }
+  const getWishlistFailureCallBack = () => {};
   const classes = useStyles();
   const productsRedux = useSelector((state) => state.cartReducer.products);
   const favorites = [];
@@ -52,17 +45,24 @@ const WishList = ({ ...props }) => {
           style={{ gap: "0px", padding: "15px 20px" }}
           alignItems="center"
         >
-          {favoriteData.length > 0 ?
-            favoriteData.map((item) => (
-
-              <Grid
+          {favoriteData?.data?.length > 0 ?
+            favoriteData?.data?.map((item) => {
+              item = {
+                added_in_wishlist: true,
+                ...item
+              }
+              return (<Grid
                 item
                 xs={12}
                 sm={12}
                 lg={4}
                 md={6}
                 // sx={{ marginTop: "-20px" }}
-                sx={{ display: "flex", justifyContent: "space-between", marginTop: "-20px" }}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "-20px",
+                }}
                 key={item.id}
               >
                 <AddCart
@@ -74,32 +74,34 @@ const WishList = ({ ...props }) => {
                   width="180px"
                   fav={true}
                   props={props}
+                  favourite_id={favoriteData?.favourite_id}
+                  reload_product={GetWishList}
                 // counts={cartValues.cart_items && cartValues.cart_items}
                 // user={user_id}
                 />
               </Grid>
-            )
-            ) : (
-                <Grid
-                  container
-                  direction="column"
-                  style={{ gap: "16px", padding: "40px 0px" }}
-                  alignItems="center"
-                >
-                  <Box
-                    component="img"
-                    style={{ width: 250, height: 250 }}
-                    src={NoWishlist}
-                  />
-                  <Typography variant="h4" color="primary">
-                    No Favourites
-                  </Typography>
-                  <Typography>
-                    You haven’t wishlisted any items, Browse items and wishlist it.
-                  </Typography>
-                </Grid>
-              // </Grid>
             )}
+          ) : (
+            <Grid
+              container
+              direction="column"
+              style={{ gap: "16px", padding: "40px 0px" }}
+              alignItems="center"
+            >
+              <Box
+                component="img"
+                style={{ width: 250, height: 250 }}
+                src={NoWishlist}
+              />
+              <Typography variant="h4" color="primary">
+                No Favourites
+              </Typography>
+              <Typography>
+                You haven’t wishlisted any items, Browse items and wishlist it.
+              </Typography>
+            </Grid>
+            // </Grid>
+          )}
         </Grid>
       </Grid>
     </>
@@ -118,7 +120,10 @@ const useStyles = makeStyles((theme) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getWishlist: (data, successCallBack, failureCallBack) => dispatch(wishlistAction.getWishlist(data, successCallBack, failureCallBack)),
-  }
-}
+    getWishlist: (data, successCallBack, failureCallBack) =>
+      dispatch(
+        wishlistAction.getWishlist(data, successCallBack, failureCallBack)
+      ),
+  };
+};
 export default connect(null, mapDispatchToProps)(WishList);

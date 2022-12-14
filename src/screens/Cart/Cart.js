@@ -1,15 +1,28 @@
 import React from "react";
 import { Box, Grid, Typography, Button, Divider } from "@mui/material";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import NoCartItemIcon from "../../assets/no-cart.png";
-
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+// import {
+//   AddOutlined,
+//   Favorite,
+//   FavoriteOutlined,
+//   RemoveOutlined,
+//   ResetTvRounded,
+// } from "@mui/icons-material";
 
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import {
+  increment,
+  decrement,
+  removeCartProduct,
+  addToCart,
+} from "../../redux/actions/cartActions";
 
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import {
   AddOutlined,
@@ -32,7 +45,6 @@ const Cart = ({
   removeCartItem,
 }) => {
   const classes = useStyles();
-  const navigate = useNavigate();
   const params = useParams();
   console.log("prama", params);
   const dispatch = useDispatch();
@@ -74,6 +86,8 @@ const Cart = ({
     setAmount(value.reduce((a, b) => a + b, 0));
     return amount;
   };
+
+  const navigate = useNavigate();
   useEffect(() => {
     totalValue(total);
   }, [total]);
@@ -137,6 +151,7 @@ const Cart = ({
         );
         // setItemsIncart(res.cart_items.length);
         setCartData(res);
+        dispatch({ type: "LOADER_CLOSE" });
       } else {
         // let message = res.message;
         // WToast.show({ data: 'Something went wrong' });
@@ -283,55 +298,13 @@ const Cart = ({
       justifyContent="center"
       alignItems="flex-start"
     >
-      {cartData === 0 && (
-        <Grid
-          className={classes.boxStyle}
-          style={{ margin: "auto" }}
-          item
-          xs={8}
-          sm={8}
-          md={6}
-          lg={5}
-          xl={4}
-          container
-        >
-          <Grid
-            container
-            direction="column"
-            alignItems="center"
-            style={{ gap: "16px" }}
-          >
-            <Box
-              component="img"
-              style={{ width: "200px", height: "200px" }}
-              src={NoCartItemIcon}
-            />
-            <Typography variant="h4" color="primary">
-              Your cart is empty
-            </Typography>
-            <Typography>
-              Looks like you haven’t added anything to your cart yet !
-            </Typography>
-            <Button
-              variant="contained"
-              onClick={() => {
-                navigate("/home");
-              }}
-              className={classes.btncontainedPrimary}
-            >
-              Browse Products
-            </Button>
-          </Grid>
-        </Grid>
-      )}
-
-      {cartData !== 0 && (
+      {cartData?.cart_items?.length !== 0 ? (
         <Grid item xs={12} sm={12} md={12} lg={11} xl={11}>
           <Grid container>
             <Grid item xs={12} sm={12} md={8} lg={8} xl={7} sx={{ px: 1 }}>
               <Grid container className={classes.boxStyle}>
                 {cartData &&
-                  cartData.cart_items.map((item, i) => {
+                  cartData?.cart_items?.map((item, i) => {
                     return (
                       <Grid
                         container
@@ -468,7 +441,7 @@ const Cart = ({
                     Total Amount = {'₹'}{totalAmount}
                   </Button>
                 </Box> */}
-                {/* <Payment value={amount.toString()} /> */}
+                {/* <Payment value={totalAmount.toString()} /> */}
               </Grid>
             </Grid>
             {/*   order summary ui else chages you can dis card accordingly of merge connflicts in this push */}
@@ -502,20 +475,20 @@ const Cart = ({
                     </Typography>
                   </Grid>
                 </Grid>
-                {productSummary.map((product) => {
+                {cartData?.cart_items?.map((product) => {
                   return (
                     <Grid item container key={product.id}>
                       <Grid item xs={6} sx={{ pb: 1 }}>
-                        <Typography>{product.description}</Typography>
+                        <Typography>{product.item_name}</Typography>
                       </Grid>
                       <Grid item xs={3} sx={{ pb: 1 }}>
                         <Typography align="center">
-                          x{product.quantity}
+                          {product.cart_quantity}
                         </Typography>
                       </Grid>
                       <Grid item xs={3} sx={{ pb: 1 }}>
                         <Typography align="end">
-                          INR {product.amount}
+                          {"₹"} {product.item_price * product.cart_quantity}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -534,10 +507,13 @@ const Cart = ({
                   }}
                 >
                   <Grid item xs={9}>
-                    <Typography>Sub Total(Inclusive Taxes)</Typography>
+                    <Typography>Sub Total</Typography>
                   </Grid>
                   <Grid item xs={3}>
-                    <Typography align="end">INR 3.00</Typography>
+                    <Typography align="end">
+                      {"₹"}
+                      {totalAmount}
+                    </Typography>
                   </Grid>
                 </Grid>
 
@@ -554,7 +530,7 @@ const Cart = ({
                     <Typography>Delivery Charges</Typography>
                   </Grid>
                   <Grid item xs={3}>
-                    <Typography align="end">+ INR 3.00</Typography>
+                    <Typography align="end">{"₹"}30</Typography>
                   </Grid>
                 </Grid>
 
@@ -564,14 +540,15 @@ const Cart = ({
                   </Grid>
                   <Grid item xs={3}>
                     <Typography align="end" variant="h6">
-                      +INR 300.00
+                      {"₹"}
+                      {totalAmount + 30}
                     </Typography>
                   </Grid>
                 </Grid>
               </Grid>
               <Grid container sx={{ my: 2 }}>
                 <Button
-                  onClick={() => navigate("/home/check-out")}
+                  onClick={() => navigate("/home/check-out/")}
                   fullWidth
                   className={classes.btncontainedPrimary}
                 >
@@ -580,6 +557,46 @@ const Cart = ({
               </Grid>
             </Grid>
             {/*  order summary ui else chages you can dis card accordingly  */}
+          </Grid>
+        </Grid>
+      ) : (
+        <Grid
+          className={classes.boxStyle}
+          style={{ margin: "auto" }}
+          item
+          xs={8}
+          sm={8}
+          md={6}
+          lg={5}
+          xl={4}
+          container
+        >
+          <Grid
+            container
+            direction="column"
+            alignItems="center"
+            style={{ gap: "16px" }}
+          >
+            <Box
+              component="img"
+              style={{ width: "200px", height: "200px" }}
+              src={NoCartItemIcon}
+            />
+            <Typography variant="h4" color="primary">
+              Your cart is empty
+            </Typography>
+            <Typography>
+              Looks like you haven’t added anything to your cart yet !
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => {
+                navigate("/home");
+              }}
+              className={classes.btncontainedPrimary}
+            >
+              Browse Products
+            </Button>
           </Grid>
         </Grid>
       )}
@@ -608,7 +625,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
     background: theme.palette.primary.main,
     textTransform: "none",
-    borderRadius: "8px",
+    borderRadius: "24px",
     boxShadow: "none",
     letterSpacing: "1px",
     "&:hover": {
