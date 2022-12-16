@@ -48,7 +48,7 @@ const MyOrder = (props) => {
 
   return (
     <>
-      <Typography variant="h4">MyOrder</Typography>
+      <Typography variant="h4">My Orders</Typography>
       {/* when no order is availale */}
 
       {orderListData?.length === 0 ? (
@@ -204,7 +204,7 @@ const MyOrder = (props) => {
                 <Grid item xs={12}>
                   <Typography>
                     <span style={{ color: "GrayText" }}>Payment</span> :{" "}
-                    {item.payment_status}
+                    {item.status}
                   </Typography>
                 </Grid>
 
