@@ -14,7 +14,7 @@ const LoginButton = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const clientId =
-    "244218418002-j5d2f1j88fc0p1nrjqriuj6k6evpclgr.apps.googleusercontent.com";
+    "714305107675-p1hp4poekt15ikfnarsuhn6h5h33ttsk.apps.googleusercontent.com";
 
   const onSuccess = (res) => {
     const navigatetoHome = () => {
