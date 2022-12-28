@@ -84,8 +84,8 @@ const Profile = () => {
                   >
                     <Box
                       component="img"
-                      // src={avatar || User}
-                      src={User}
+                      src={avatar || User}
+                      // src={User}
                       style={{ width: 100, height: 100, borderRadius: "50%" }}
                     />
                     <Grid item>

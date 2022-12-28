@@ -257,18 +257,18 @@ export const updateUserProfile = function* updateUserProfileSaga(action) {
 
   let formdata = new FormData();
   formdata.append("full_name", action.payload.name);
-  formdata.append("avatar", action.payload.imgSrc);
+  // formdata.append("avatar", action.payload.imgSrc);
 
-  console.log("formdata....", formdata.get("full_name"));
-  // console.log(payload.get('foo'))
+  // console.log("formdata....", formdata.get("full_name"));
+  // // console.log(payload.get('foo'))
 
-  let formInputData = [formdata.get("full_name"), formdata.get("avatar")];
-  let body = formInputData;
+  // let formInputData = [formdata.get("full_name"), formdata.get("avatar")];
+  // let body = formInputData;
 
-  console.log("Body..", body);
+  // console.log("Body..", body);
 
   try {
-    const res = yield call(performPatchRequestEditProfile, path, body);
+    const res = yield call(performPatchRequestEditProfile, path, formdata);
 
     if (res !== undefined && res.status === 200) {
       // yield put({ type: "USER_PROFILE_ACTION", payload: res.data });
@@ -325,7 +325,7 @@ export const updateUserProfile = function* updateUserProfileSaga(action) {
 //update image only --------------------------------------------------------------------------------------
 export const updateUserImage = function* updateUserImageSaga(action) {
   console.log("updateUserImage saga run", action);
-  // yield put({ type: "LOADER" });
+  yield put({ type: "LOADER" });
 
   let userId = JSON.parse(localStorage.getItem("userId"));
 
@@ -333,22 +333,21 @@ export const updateUserImage = function* updateUserImageSaga(action) {
 
   let formdata = new FormData();
   formdata.append("full_name", action.name);
-  formdata.append("avatar", {
-    uri: action.imgSrc,
-    name: "profile_image.jpg",
-    type: "image/jpeg",
-  });
-
-  let formInputData = [formdata.get("full_name"), formdata.get("avatar")];
-  let body = formInputData;
-
-  console.log("body..", body);
+  formdata.append("avatar", action.imgSrc);
+  
+  // let formInputData = [formdata.get("full_name"), formdata.get("avatar")];
+  // let body = formInputData;
+  // console.log("body..", body );
 
   try {
-    const res = yield call(performPatchRequestEditProfile, path, body);
+    const res = yield call(performPatchRequestEditProfile, path, formdata);
 
     if (res !== undefined && res.status === 200) {
-      yield put({ type: "USER_PROFILE_ACTION", payload: res?.data });
+      // yield put({ type: "USER_PROFILE_ACTION", payload: res?.data });
+      yield put({ type: "USER_PROFILE_SAGA" });
+      // yield action.payload.close();
+
+      yield put({ type: "LOADER_CLOSE" });
       // yield action.close();
       yield put({
         type: "SHOW_TOAST",
@@ -358,6 +357,7 @@ export const updateUserImage = function* updateUserImageSaga(action) {
         },
       });
     }
+
   } catch (er) {
     console.log("@@@ update profile API error ========", er);
     yield put({

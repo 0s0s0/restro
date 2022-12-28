@@ -74,6 +74,7 @@ const UserProfile = () => {
 
   //state to handle profile image
   const [selectedImage, setSelectedImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
 
   let phoneTen = userDetails?.full_phone_number;
   phoneTen = phoneTen?.toString();
@@ -85,8 +86,8 @@ const UserProfile = () => {
     setMyEmail(userDetails?.email);
     setPhone(phoneTen);
     setSelectedImage(avatar);
-    console.log("phone dialog useEffect", userDetails, name, myEmail, phone);
-  }, [userDetails]);
+    // console.log("phone dialog useEffect", userDetails, name, myEmail, phone);
+  }, [userDetails, avatar]);
 
   //state to handle Errors of Fields Name, Email,Phone
   const [nameError, setNameError] = useState(false);
@@ -355,7 +356,7 @@ const UserProfile = () => {
             <Box
               component="img"
               // src={selectedImage || User}
-              src={User}
+              src={profileImage ? profileImage : (selectedImage ? selectedImage : User) }
               // src={selectedImage == null ? User : selectedImage}
               sx={{ borderRadius: 1, p: 2, border: "1px solid #e6e6e6 " }}
               style={{
@@ -365,7 +366,7 @@ const UserProfile = () => {
               }}
             />
           </label>
-          {/* <input
+          <input
             id="file-input"
             type="file"
             style={{ display: "none" }}
@@ -374,8 +375,9 @@ const UserProfile = () => {
               console.log("files", img);
               // setSelectedImage(URL.createObjectURL(img));
               setSelectedImage(img);
+              setProfileImage(URL.createObjectURL(img));
             }}
-          /> */}
+          />
           {selectedImage !== avatar && (
             <>
               <Button
@@ -383,7 +385,7 @@ const UserProfile = () => {
                   console.log("selected img....", selectedImage);
                   dispatch({
                     type: "UPDATE_IMAGE",
-                    imgSrc: selectedImage.name,
+                    imgSrc: selectedImage,
                     name: name,
                   });
                 }}

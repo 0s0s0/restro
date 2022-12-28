@@ -37,6 +37,10 @@ const Navbar = ({ getCartItems }) => {
     (state) => state.userReducer?.userProfileData?.data.data
   );
 
+  const avatar = useSelector(
+    (state) => state.userReducer?.userProfileData?.data.avatar
+  );
+
   const favoriteData = useSelector(
     (state) => state.cartReducer.favoriteProducts
   );
@@ -250,8 +254,9 @@ const Navbar = ({ getCartItems }) => {
                   </Avatar> */}
                   <Box
                     component="img"
-                    src={User}
-                    sx={{ width: 40, height: 40 }}
+                    // src={User}
+                    src={avatar || User}
+                    sx={{ width: 40, height: 40, borderRadius: 20 }}
                   />
                 </NavLink>
               </Grid>
